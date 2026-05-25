@@ -8,7 +8,7 @@ APIM の **AI Gateway** は、既存の API Gateway を生成 AI 向けに拡張
 
 ## 所要時間
 
-約 50 分
+約 40 分
 
 ## 事前条件
 

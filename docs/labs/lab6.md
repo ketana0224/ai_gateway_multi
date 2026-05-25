@@ -8,7 +8,7 @@ APIM（Azure）と外部 SHGW（Container Apps = AWS 相当）を **W3C `tracepa
 
 ## 所要時間
 
-約 75 分
+約 45 分
 
 ## 事前条件
 

@@ -23,7 +23,7 @@ Lab 3 で構築した **Foundry の gpt-4o-mini (`openai-api`)** に加え、講
 
 ## 所要時間
 
-約 60 分
+約 45 分
 
 ## 事前条件
 

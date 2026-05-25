@@ -13,7 +13,7 @@ Lab 3 で APIM の AI Gateway に登録する **LLM プロバイダを 2 系統*
 
 ## 所要時間
 
-約 30 分（Foundry 作成 + モデル deploy 約 25 分 / mimic 疎通 5 分）
+約 25 分（Foundry 作成 + モデル deploy 約 20 分 / mimic 疎通 5 分。Lab 1 の APIM プロビジョニング待ちと並行実施可）
 
 ## 事前条件
 

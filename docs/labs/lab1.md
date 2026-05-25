@@ -6,7 +6,7 @@ AI Gateway のハブとなる **Azure API Management（Developer SKU）** と、
 
 ## 所要時間
 
-約 45 分（APIM プロビジョニングは 30–45 分かかるため、待機中に [Lab 2](./lab2.md) の Foundry リソース作成 + gpt-4o-mini デプロイ + mimic 疎通確認（約 30 分）を済ませておくと効率的）
+約 45 分（うち APIM プロビジョニングの待ち時間が 30–45 分。待機中に [Lab 2](./lab2.md) の Foundry リソース作成 + gpt-4o-mini デプロイ + mimic 疎通確認（約 25 分）を並行実施してください。実際の画面操作は約 15 分）
 
 ## 事前条件
 
@@ -68,7 +68,7 @@ AI Gateway のハブとなる **Azure API Management（Developer SKU）** と、
 6. **タグ** タブ: 任意
 7. **確認とインストール** → **作成**
 
-> :hourglass: プロビジョニングは 30–45 分かかります。**この間に [Lab 2](./lab2.md) の Foundry リソース作成 + gpt-4o-mini デプロイ + mimic 疎通確認（約 30 分）を済ませておいてください**。
+> :hourglass: プロビジョニングは 30–45 分かかります。**この間に [Lab 2](./lab2.md) の Foundry リソース作成 + gpt-4o-mini デプロイ + mimic 疎通確認（約 25 分）を済ませておいてください**。
 
 ## 1-4. APIM の Application Insights ロガー設定確認
 
