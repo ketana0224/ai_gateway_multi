@@ -6,6 +6,8 @@ APIM（Azure）と外部 SHGW（Container Apps = AWS 相当）を **W3C `tracepa
 
 > :information_source: **本 Lab は厳密な E2E（クライアント → バックエンド）ではなく、APIM 以下のホップに限定した分散トレース** です。クライアント側 OTel 計装や Foundry Agent は本 Lab のスコープ外とし、§6-2 で拡張オプションとして講説します。
 
+> :warning: **APIM のテレメトリ出力は OTel/OTLP 非対応です。** APIM は Application Insights **独自インジェスチョン プロトコル**（AI SDK Channel）でテレメトリを送信します。本 Lab のタイトルにある「OpenTelemetry」は **W3C `traceparent` ヘッダーによるトレースコンテキスト伝搬**（OTel が採用した W3C 標準）を指しており、OTel Exporter / OTLP によるテレメトリ送信ではありません。APIM のテレメトリは `AppRequests` / `AppDependencies` / `customMetrics` テーブル（Application Insights スキーマ）に格納され、KQL で参照します。
+
 ## 所要時間
 
 約 45 分
