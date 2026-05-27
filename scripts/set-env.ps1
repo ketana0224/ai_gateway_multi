@@ -7,7 +7,7 @@
 # [1] 各自で書き換える値
 # ============================================================
 $INITIALS       = "user01"       # 割り当てられた番号に変更 (例: "user01", "user02" ...)
-$SUBSCRIPTION   = (az account show --query id -o tsv 2>$null)  # 現在ログイン中のサブスクリプションを自動取得
+$SUBSCRIPTION   = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # az account show --query id -o tsv
 $LOCATION       = "japaneast"   # 受講者リソースのリージョン
 
 # mimic エンドポイント (講師から配布。例: https://ca-mimic-shared.xxx.eastus.azurecontainerapps.io)
