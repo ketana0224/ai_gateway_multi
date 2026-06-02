@@ -1,4 +1,4 @@
-# ============================================================
+﻿# ============================================================
 #  set-env.ps1  — ハンズオン共通 環境変数セットアップ
 #  使い方: . .\scripts\set-env.ps1
 # ============================================================
@@ -10,8 +10,8 @@ $INITIALS       = "user01"       # 割り当てられた番号に変更 (例: "u
 $SUBSCRIPTION   = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"  # az account show --query id -o tsv
 $LOCATION       = "japaneast"   # 受講者リソースのリージョン
 
-# mimic エンドポイント (講師から配布。例: https://ca-mimic-shared.xxx.eastus.azurecontainerapps.io)
-$MIMIC_BASE_URL = "https://ca-mimic-shared.wonderfulpebble-9f4a40b9.eastus.azurecontainerapps.io"
+# mock エンドポイント (講師から配布された値を貼り付ける)
+$mock_BASE_URL = "https://xxxxxxxx.xxxxxxxxxxxxxxxx.eastus.azurecontainerapps.io"
 
 # Lab 5: SHGW トークン (APIM Portal → ゲートウェイ → デプロイ → アクセストークンをコピー後ここに貼付)
 $SHGW_TOKEN     = ""
@@ -53,7 +53,7 @@ $env:CAE_SHGW          = $CAE_SHGW
 $env:ACA_SHGW          = $ACA_SHGW
 $env:SHGW_NAME         = $SHGW_NAME
 $env:SHGW_TOKEN        = $SHGW_TOKEN
-$env:MIMIC_BASE_URL    = $MIMIC_BASE_URL
+$env:mock_BASE_URL    = $mock_BASE_URL
 $env:MODEL_ID          = $MODEL_ID
 $env:GPT_DEPLOYMENT    = $GPT_DEPLOYMENT
 $env:APIM_HOST         = $APIM_HOST
@@ -96,7 +96,7 @@ Write-Host "CAE_SHGW          : $env:CAE_SHGW"
 Write-Host "ACA_SHGW          : $env:ACA_SHGW"
 Write-Host "SHGW_NAME         : $env:SHGW_NAME"
 Write-Host "SHGW_TOKEN        : $(if ($env:SHGW_TOKEN) { '(set)' } else { '(未設定 — Lab 5 前に再実行)' })"
-Write-Host "MIMIC_BASE_URL    : $env:MIMIC_BASE_URL"
+Write-Host "mock_BASE_URL    : $env:mock_BASE_URL"
 Write-Host "MODEL_ID          : $env:MODEL_ID"
 Write-Host "GPT_DEPLOYMENT    : $env:GPT_DEPLOYMENT"
 Write-Host "APIM_HOST         : $env:APIM_HOST"

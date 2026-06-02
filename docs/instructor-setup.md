@@ -1,8 +1,8 @@
-# 講師用 事前準備ガイド — Mimic API 共有エンドポイントの構築
+﻿# 講師用 事前準備ガイド — mock API 共有エンドポイントの構築
 
-このドキュメントは **AI Gateway 複数ベンダー ハンズオン** で参加者全員が共有する **AWS Bedrock Runtime 互換の mimic API**（Anthropic Claude）を、講師が **事前に 1 セットだけ** デプロイするための手順です。
+このドキュメントは **AI Gateway 複数ベンダー ハンズオン** で参加者全員が共有する **AWS Bedrock Runtime 互換の mock API**（Anthropic Claude）を、講師が **事前に 1 セットだけ** デプロイするための手順です。
 
-- 参加者向け本編は [docs/labs/lab2.md](./docs/labs/lab2.md)（参加者は `<MIMIC_BASE_URL>` への疎通確認のみ）
+- 参加者向け本編は [docs/labs/lab2.md](./docs/labs/lab2.md)（参加者は `<mock_BASE_URL>` への疎通確認のみ）
 - 講師は本ガイドの手順で 1 つの Container App を立てて、その Base URL を参加者に配布する
 
 ---
@@ -11,7 +11,7 @@
 
 | 項目 | 方針 |
 |---|---|
-| **mimic 実体** | 1 つの Python ASGI アプリ（FastAPI）で AWS Bedrock Runtime 互換の 2 エンドポイント（Converse / InvokeModel）を同居実装 |
+| **mock 実体** | 1 つの Python ASGI アプリ（FastAPI）で AWS Bedrock Runtime 互換の 2 エンドポイント（Converse / InvokeModel）を同居実装 |
 | **ホスティング** | **Azure Container Apps**（Free Trial 含む全サブスクリプションで動作、0 スケーリング可、リクエスト課金） |
 | **参加者共有** | 全員が同じ Base URL を叩く。APIM 側で参加者ごとの認証/メトリクス分離 |
 | **コスト** | 0 スケーリング設定でアイドル時は完全無課金。ハンズオン中のみ起動 |
@@ -21,9 +21,9 @@
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│  ca-mimic-shared (Container App, 1 replica, 0-scaling)     │
+│  ca-mock-shared (Container App, 1 replica, 0-scaling)     │
 │                                                             │
-│  FastAPI (Python 3.13) — AWS Bedrock Runtime mimic         │
+│  FastAPI (Python 3.13) — AWS Bedrock Runtime mock         │
 │   ├─ POST /model/{modelId}/converse  (Bedrock Converse)     │
 │   └─ POST /model/{modelId}/invoke    (Bedrock InvokeModel,  │
 │                                       Anthropic native body)│
@@ -49,46 +49,296 @@
 
 > **⚠️ ACR Tasks 制限について**: 一部の Free Trial / Pass-through サブスクリプションでは `az acr build`（ACR Tasks）が `TasksOperationsNotAllowed` で拒否されます。その場合は **手順 4.3 でローカル Docker ビルド → `docker push`** に切り替えてください（本ガイドの 4.3 でも記載）。
 
-### 2.1 本ガイドの実デプロイ例（参考値）
+### 2.1 変数一覧
 
-| 項目 | 値 |
-|---|---|
-| Subscription ID | `9353f1a1-94a4-4e4b-ae82-c27ea3d07160` |
-| Resource Group | `rg-mcp-instructor` |
-| Location | `eastus` |
-| Container Registry | `mcpinstructorsvn2j` (Basic, admin enabled) |
-| Container Apps Environment | `cae-mcp-instructor` |
-| Container App | `ca-mimic-shared` |
-| Image | `mcpinstructorsvn2j.azurecr.io/mimic:1.0.0` |
-| **MIMIC_BASE_URL** | **`https://ca-mimic-shared.wonderfulpebble-9f4a40b9.eastus.azurecontainerapps.io`** |
+> 以下の変数は `scripts/set-env-instructor.ps1` で設定します。`[1] 講師が書き換える値` の欄を各自の環境に合わせて編集してから `. .\scripts\set-env-instructor.ps1` を実行してください。
+
+| 変数名 | 既定値 | 説明 |
+|---|---|---|
+| `$SUBSCRIPTION` | *(要設定)* | `az account show --query id -o tsv` で取得 |
+| `$RG` | `rg-apim-instructor` | リソースグループ名 |
+| `$LOCATION` | `eastus` | デプロイリージョン（`japaneast` でも可） |
+| `$ACR_NAME` | *(要設定)* | Container Registry 名（グローバル一意） |
+| `$ENV_NAME` | `cae-apim-instructor` | Container Apps 環境名 |
+| `$APP_NAME` | `ca-mock-shared` | Container App 名 |
+| `$LOG_NAME` | `log-mock-shared` | Log Analytics ワークスペース名 |
+| `$IMAGE` | `mock:1.0.0` | イメージタグ |
+| `$mock_BASE_URL` | *(手順 4.5 で取得)* | 参加者へ配布する Base URL |
+| `$INSTRUCTOR_UPN` | *(要設定)* | 講師アカウントの UPN（例: `apim-instructor@contoso.onmicrosoft.com`） |
+| `$INSTRUCTOR_DISPLAY` | `APIM Instructor` | 表示名 |
+| `$INSTRUCTOR_PASS` | *(要設定)* | 初期パスワード（初回サインイン時に変更必須） |
 
 ---
 
-## 3. mimic 実装コード
+### 2.2 リソースプロバイダーの事前登録（必須）
 
-リポジトリの `mimic/` 配下に以下を配置します。
+**リソースプロバイダー**とは、Azure サービスを提供する名前空間です。`Microsoft.KeyVault` なら Key Vault、`Microsoft.CognitiveServices` なら Azure AI サービス（Foundry 含む）が対応します。リソースを作成する前にそのプロバイダーがサブスクリプションで「登録済み」になっている必要があり、未登録のままリソースを作成しようとすると `AuthorizationFailed` が返ります。
+
+> **実行アカウント**: テナント管理者アカウント（グローバル管理者 / サブスクリプション Owner）で実行してください。`apim-instructor` アカウントには Contributor のみのため拒否されます。
+
+```powershell
+# テナント管理者アカウントでサインイン
+az login --allow-no-subscriptions
+
+$providers = @(
+    "Microsoft.ApiManagement",
+    "Microsoft.CognitiveServices",
+    "Microsoft.Insights",
+    "Microsoft.KeyVault",
+    "Microsoft.MachineLearningServices",
+    "Microsoft.OperationalInsights",
+    "Microsoft.OperationsManagement",
+    "Microsoft.Search",
+    "Microsoft.Storage",
+    "Microsoft.ContainerRegistry",
+    "Microsoft.App"
+)
+
+foreach ($p in $providers) {
+    az provider register --namespace $p --wait
+    Write-Host "Registered: $p"
+}
+```
+
+登録状態の確認:
+
+```powershell
+foreach ($p in $providers) {
+    $state = az provider show --namespace $p --query registrationState -o tsv
+    Write-Host "$p : $state"
+}
+```
+
+> :information_source: 登録は**サブスクリプション全体に対して一度だけ**行えば OK です。参加者全員分を個別に実行する必要はありません。登録完了まで数分かかる場合があります。
+
+---
+
+### 2.3 講師アカウントの作成と RBAC 付与
+
+> **テナント管理者が実行します。** ハンズオン専用の講師アカウントを作成し、必要な権限を付与します。既存アカウントを流用する場合はスキップしてください。
+
+```powershell
+# ---- 0. テナント管理者でサインイン ----
+az login --allow-no-subscriptions   # テナント管理者アカウントでブラウザ認証
+
+# 変数を読み込む（set-env-instructor.ps1 の [0] を編集済みであること）
+. .\scripts\set-env-instructor.ps1
+
+# ---- 1. 講師ユーザーを作成 ----
+az ad user create `
+  --display-name $INSTRUCTOR_DISPLAY `
+  --user-principal-name $INSTRUCTOR_UPN `
+  --password $INSTRUCTOR_PASS `
+  --force-change-password-next-sign-in true
+
+# ---- 2. Object ID を取得 ----
+$INSTRUCTOR_OID = az ad user show --id $INSTRUCTOR_UPN --query id -o tsv
+Write-Host "Instructor OID: $INSTRUCTOR_OID"
+
+# ---- 3. Contributor ロールをサブスクリプションスコープで付与 ----
+az role assignment create `
+  --assignee-object-id $INSTRUCTOR_OID `
+  --assignee-principal-type User `
+  --role "Contributor" `
+  --scope "/subscriptions/$SUBSCRIPTION"
+
+# ---- 4. User Access Administrator をサブスクリプションスコープで付与 ----
+# 参加者が自分の APIM で Foundry API を設定できるよう、セクション 2.4 で
+# 参加者 ID に User Access Administrator（roleAssignments/write）を付与するために必要
+az role assignment create `
+  --assignee-object-id $INSTRUCTOR_OID `
+  --assignee-principal-type User `
+  --role "User Access Administrator" `
+  --scope "/subscriptions/$SUBSCRIPTION"
+
+Write-Host "=== 完了 ===" -ForegroundColor Green
+Write-Host "UPN      : $INSTRUCTOR_UPN"
+Write-Host "Password : $INSTRUCTOR_PASS  ← メモしておくこと"
+Write-Host "初回サインイン: https://portal.azure.com"
+```
+
+> **📝 MFA について**: テナントの条件付きアクセスポリシーで MFA が必須になっている場合、初回サインイン後に Microsoft Authenticator などの追加認証方法のセットアップが求められます。環境に合わせて事前にセットアップ方法を案内するか、[https://aka.ms/mfasetup](https://aka.ms/mfasetup) への誘導を追加してください。
+
+**付与するロール:**
+
+| ロール | スコープ | 目的 |
+|---|---|---|
+| `Contributor` | サブスクリプション | RG / ACR / Log Analytics / Container Apps の作成・管理 |
+| `User Access Administrator` | サブスクリプション | 参加者アカウントへのロール割り当て（セクション 2.4）を講師アカウントで実行するために必要 |
+
+> **⚠️ セキュリティ注意**: `$INSTRUCTOR_PASS` は `set-env-instructor.ps1`（`.gitignore` 対象）にのみ記載し、リポジトリにコミットしないでください。ハンズオン終了後は `az ad user delete --id $INSTRUCTOR_UPN` でアカウントを削除してください。
+
+---
+
+### 2.4 参加者アカウントの作成と RG 付与
+
+> **テナント管理者が実行します。** セクション 2.3 に続いてテナント管理者のまま実行してください。講師アカウント（`apim-instructor`）に切り替えた後で実行すると「Insufficient privileges」エラーになります。現在のサインイン状態は `az ad signed-in-user show --query userPrincipalName -o tsv` で確認できます。
+
+参加者 ID は `user01`、`user02`、… の形式で統一します。
+
+```powershell
+# ---- 参加者 ID を設定（1 人ずつ変えて繰り返す）----
+$PID_       = "user01"   # user02, user03 ... と繰り返す
+$P_UPN      = "$PID_@M365CPI65139919.onmicrosoft.com"
+$P_PASS     = "Password01!"   # MFA 必須環境のため固定パスワードで可
+$P_RG       = "rg-aigw-handson-$PID_"
+
+# ---- 1. Entra ユーザー作成 ----
+az ad user create `
+  --display-name $PID_ `
+  --user-principal-name $P_UPN `
+  --password $P_PASS
+
+# ---- 2. Object ID 取得 ----
+$P_OID = az ad user show --id $P_UPN --query id -o tsv
+Write-Host "OID: $P_OID"
+
+# ---- 3. 参加者 RG 作成 ----
+az group create --name $P_RG --location $LOCATION
+
+# ---- 4. 参加者 RG への Contributor 付与 ----
+az role assignment create `
+  --assignee-object-id $P_OID `
+  --assignee-principal-type User `
+  --role "Contributor" `
+  --scope "/subscriptions/$SUBSCRIPTION/resourceGroups/$P_RG"
+
+# ---- 5. 講師 RG（mock API）への Contributor 付与 ----
+# Lab 5 で参加者が共有 env `cae-apim-instructor` を使って Container App を作成する際、
+# Portal の ARM デプロイが rg-apim-instructor スコープで
+# Microsoft.Resources/deployments/validate/action と
+# Microsoft.App/managedEnvironments/join/action を要求するため Contributor が必要。
+# ※ 参加者が講師リソース（APIM 本体・mock API）を誤って削除しないよう、
+#   ハンズオン前に口頭で注意すること。
+az role assignment create `
+  --assignee-object-id $P_OID `
+  --assignee-principal-type User `
+  --role "Contributor" `
+  --scope "/subscriptions/$SUBSCRIPTION/resourceGroups/$RG"
+
+# ---- 6. Foundry データプレーンアクセス（Playground / Agent Service 利用に必要）----
+# Portal UI では「Azure AI User」と表示されるが、実際の RBAC ロール名は「Cognitive Services User」
+az role assignment create `
+  --assignee-object-id $P_OID `
+  --assignee-principal-type User `
+  --role "Cognitive Services User" `
+  --scope "/subscriptions/$SUBSCRIPTION/resourceGroups/$P_RG"
+
+# ---- 7. APIM から Foundry API を作成するときに必要なロール割り当て権限 ----
+# APIM の「Microsoft Foundry」API 追加ウィザードが内部で APIM マネージド ID への
+# ロール割り当てを実行するため、参加者に roleAssignments/write が必要
+az role assignment create `
+  --assignee-object-id $P_OID `
+  --assignee-principal-type User `
+  --role "User Access Administrator" `
+  --scope "/subscriptions/$SUBSCRIPTION/resourceGroups/$P_RG"
+
+Write-Host "=== 完了: $PID_ ===" -ForegroundColor Green
+Write-Host "UPN      : $P_UPN"
+Write-Host "Password : $P_PASS  ← 参加者に伝える"
+Write-Host "RG       : $P_RG"
+```
+
+**付与するロール（参加者）:**
+
+| ロール | スコープ | 目的 |
+|---|---|---|
+| `Contributor` | `rg-aigw-handson-<id>` | APIM・App Insights 等の作成・管理 |
+| `Contributor` | `rg-apim-instructor`（講師 RG） | mock API エンドポイントの参照 + Lab 5: Portal が ARM デプロイ検証（`deployments/validate/action`）と env への `join/action` を RG スコープで要求するため |
+| `Cognitive Services User` | `rg-aigw-handson-<id>` | Foundry Playground・Agent Service のデータプレーンアクセス（Portal UI 表示名「Azure AI User」） |
+| `User Access Administrator` | `rg-aigw-handson-<id>` | APIM の「Microsoft Foundry」API 作成時に APIM マネージド ID へのロール割り当て（`roleAssignments/write`）が必要 |
+
+> **📋 初回ログイン時の MFA 登録について（環境によっては必須）**  
+> テナントで条件付きアクセスが有効になっている場合、参加者は初回サインイン時に MFA 登録フロー（Microsoft Authenticator 等）が求められます。  
+> ハンズオン当日に時間を取られないよう、**事前に参加者へ初回ログインと MFA 登録を済ませるよう案内してください。**  
+> MFA 登録 URL: `https://aka.ms/mfasetup`
+
+#### MFA 登録を省略したい場合：一時アクセスパス (TAP) の利用
+
+MFA デバイスを持参できない参加者がいる場合や、当日の時間を節約したい場合は **一時アクセスパス (Temporary Access Pass / TAP)** を使うと、パスワード + MFA の代わりに時限付きパスコード 1 つでサインインできます。
+
+**TAP を発行できる Entra ロール:**
+
+| ロール | 備考 |
+|---|---|
+| グローバル管理者 | すべてのユーザーに発行可 |
+| 特権認証管理者 | すべてのユーザーに発行可 |
+| 認証管理者 | 管理者以外のユーザーに発行可 |
+
+> テナント管理者（グローバル管理者）であれば追加作業なしに発行できます。
+
+**前提：TAP ポリシーを有効化（テナント全体・初回のみ）**
+
+Entra ID ポータルで有効化するか、以下の CLI で実行します。
+
+```
+Entra ID → 保護 → 認証方法 → 一時アクセスパス → 有効にする → すべてのユーザー → 保存
+```
+
+または CLI:
+
+```powershell
+az rest --method PUT `
+  --uri "https://graph.microsoft.com/v1.0/policies/authenticationMethodsPolicy/authenticationMethodConfigurations/temporaryAccessPass" `
+  --body '{
+    "@odata.type": "#microsoft.graph.temporaryAccessPassAuthenticationMethodConfiguration",
+    "state": "enabled",
+    "defaultLifetimeInMinutes": 480,
+    "defaultLength": 8,
+    "minimumLifetimeInMinutes": 60,
+    "maximumLifetimeInMinutes": 480,
+    "isUsableOnce": false,
+    "includeTargets": [{"targetType": "group", "id": "all_users", "isRegistrationRequired": false}]
+  }'
+```
+
+**参加者ごとに TAP を発行:**
+
+```powershell
+$P_UPN = "user01@M365CPI65139919.onmicrosoft.com"
+$P_OID = az ad user show --id $P_UPN --query id -o tsv
+
+$tap = az rest --method POST `
+  --uri "https://graph.microsoft.com/v1.0/users/$P_OID/authentication/temporaryAccessPassMethods" `
+  --body '{"lifetimeInMinutes": 480, "isUsableOnce": false}' | ConvertFrom-Json
+
+Write-Host "TAP : $($tap.temporaryAccessPass)  (有効期限: 8時間)"
+```
+
+**受講者のサインイン手順（TAP 利用時）:**
+1. `https://portal.azure.com` を開く
+2. UPN（`user01@...`）を入力
+3. パスワードの代わりに TAP コードを入力 → MFA 登録なしでサインイン完了
+
+> **⚠️ セキュリティ注意**: 参加者パスワードはチャット等で平文送信しないでください。ハンズオン終了後は `az ad user delete --id $P_UPN` と `az group delete --name $P_RG --yes` で参加者リソースを削除してください。
+
+---
+
+## 3. mock 実装コード
+
+リポジトリの `mock/` 配下に以下を配置します。
 
 ### 3.1 ディレクトリ構成
 
 ```
-mimic/
+mock/
 ├── Dockerfile
 ├── requirements.txt
 └── app/
     └── main.py
 ```
 
-### 3.2 `mimic/requirements.txt`
+### 3.2 `mock/requirements.txt`
 
 ```text
 fastapi==0.115.4
 uvicorn[standard]==0.32.0
 ```
 
-### 3.3 `mimic/app/main.py`
+### 3.3 `mock/app/main.py`
 
 ```python
-"""AWS Bedrock Runtime mimic for Anthropic Claude models.
+"""AWS Bedrock Runtime mock for Anthropic Claude models.
 
 Implements two Bedrock Runtime endpoints used by the Microsoft Learn
 "Amazon Bedrock passthrough LLM API" flow:
@@ -96,7 +346,7 @@ Implements two Bedrock Runtime endpoints used by the Microsoft Learn
 - POST /model/{modelId}/converse    — Bedrock Converse API (unified contract)
 - POST /model/{modelId}/invoke      — Bedrock InvokeModel API (Anthropic native body)
 
-The mimic ignores AWS SigV4 (the `Authorization` / `X-Amz-*` headers signed by
+The mock ignores AWS SigV4 (the `Authorization` / `X-Amz-*` headers signed by
 APIM are accepted but **not verified**), so the Microsoft Learn flow works end
 to end without real AWS credentials. APIM signs the request, this service just
 responds with a Bedrock-shaped echo response.
@@ -116,9 +366,9 @@ from urllib.parse import unquote
 
 from fastapi import FastAPI, Request
 
-app = FastAPI(title="AI Gateway Mimic (AWS Bedrock — Anthropic Claude)", version="2.0.0")
+app = FastAPI(title="AI Gateway mock (AWS Bedrock — Anthropic Claude)", version="2.0.0")
 
-MIMIC_SLEEP_SEC = 0.2
+mock_SLEEP_SEC = 0.2
 
 
 def _echo_text(user_text: str) -> str:
@@ -163,7 +413,7 @@ def _extract_text_from_anthropic_messages(messages: list[dict[str, Any]]) -> str
 
 @app.post("/model/{model_id:path}/converse")
 async def bedrock_converse(model_id: str, request: Request) -> dict[str, Any]:
-    await asyncio.sleep(MIMIC_SLEEP_SEC)
+    await asyncio.sleep(mock_SLEEP_SEC)
     raw = await request.body()
     body: dict[str, Any] = await request.json() if raw else {}
     messages = body.get("messages", []) if isinstance(body, dict) else []
@@ -179,13 +429,13 @@ async def bedrock_converse(model_id: str, request: Request) -> dict[str, Any]:
             "outputTokens": output_tokens,
             "totalTokens": input_tokens + output_tokens,
         },
-        "metrics": {"latencyMs": int(MIMIC_SLEEP_SEC * 1000)},
+        "metrics": {"latencyMs": int(mock_SLEEP_SEC * 1000)},
     }
 
 
 @app.post("/model/{model_id:path}/invoke")
 async def bedrock_invoke(model_id: str, request: Request) -> dict[str, Any]:
-    await asyncio.sleep(MIMIC_SLEEP_SEC)
+    await asyncio.sleep(mock_SLEEP_SEC)
     raw = await request.body()
     body: dict[str, Any] = await request.json() if raw else {}
     messages = body.get("messages", []) if isinstance(body, dict) else []
@@ -205,7 +455,7 @@ async def bedrock_invoke(model_id: str, request: Request) -> dict[str, Any]:
     }
 ```
 
-### 3.4 `mimic/Dockerfile`
+### 3.4 `mock/Dockerfile`
 
 ```dockerfile
 FROM python:3.13-slim
@@ -228,16 +478,16 @@ CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8000"]
 
 ### 4.1 リソース変数の設定（PowerShell）
 
+`scripts/set-env-instructor.ps1` の `[1] 講師が書き換える値` を編集してから、以下を実行します。
+
 ```powershell
-# 講師用変数（本ガイドの実デプロイ例）
-$SUBSCRIPTION = "9353f1a1-94a4-4e4b-ae82-c27ea3d07160"
-$RG       = "rg-mcp-instructor"
-$LOCATION = "eastus"     # japaneast でも可
-$ACR_NAME = "mcpinstructorsvn2j"   # グローバル一意。新規作成なら $(Get-Random) を付ける
-$ENV_NAME = "cae-mcp-instructor"
-$APP_NAME = "ca-mimic-shared"
-$LOG_NAME = "log-mimic-shared"
-$IMAGE    = "mimic:1.0.0"
+# ---- 0. 講師アカウントに切り替え ----
+# セクション 2.2 でテナント管理者としてサインインしている場合は必ず切り替える
+az logout
+az login   # ブラウザで $INSTRUCTOR_UPN（講師アカウント）としてサインイン
+
+# 講師用変数を読み込む（事前に set-env-instructor.ps1 の値を書き換えること）
+. .\scripts\set-env-instructor.ps1
 
 # サブスクリプション設定 & 確認
 az account set --subscription $SUBSCRIPTION
@@ -270,7 +520,7 @@ az acr create --resource-group $RG --name $ACR_NAME --sku Basic --admin-enabled 
 #### 4.3.A 方式 A: ACR Tasks でサーバーサイドビルド（推奨。Docker 不要）
 
 ```powershell
-az acr build --registry $ACR_NAME --image $IMAGE ./mimic
+az acr build --registry $ACR_NAME --image $IMAGE ./mock
 ```
 
 > **❌ `TasksOperationsNotAllowed` が返る場合**は方式 B に切り替えてください。Free Trial や Pass-through サブスクリプションでは ACR Tasks が無効化されていることがあります。
@@ -282,7 +532,7 @@ az acr build --registry $ACR_NAME --image $IMAGE ./mimic
 az acr login --name $ACR_NAME
 
 $ACR_SERVER = az acr show -n $ACR_NAME --query loginServer -o tsv
-docker build -t "$ACR_SERVER/$IMAGE" ./mimic
+docker build -t "$ACR_SERVER/$IMAGE" ./mock
 docker push "$ACR_SERVER/$IMAGE"
 ```
 
@@ -291,16 +541,22 @@ docker push "$ACR_SERVER/$IMAGE"
 ```powershell
 # Container Apps 拡張のインストール（初回のみ）
 az extension add --name containerapp --upgrade
+```
 
-# Container Apps 環境（従量課金プロファイル）— 既に存在する場合はスキップ
+**Step A — Container Apps 環境の作成（既に存在する場合はスキップ）**
+
+```powershell
 az containerapp env create `
   --name $ENV_NAME `
   --resource-group $RG `
   --location $LOCATION `
   --logs-workspace-id $LOG_ID `
   --logs-workspace-key $LOG_KEY
+```
 
-# Container App 本体
+**Step B — Container App 本体の作成（アプリが存在しない場合のみ。更新は `az containerapp update` を使用）**
+
+```powershell
 $ACR_SERVER   = az acr show -n $ACR_NAME --query loginServer -o tsv
 $ACR_USERNAME = az acr credential show -n $ACR_NAME --query username -o tsv
 $ACR_PASSWORD = az acr credential show -n $ACR_NAME --query "passwords[0].value" -o tsv
@@ -320,23 +576,21 @@ az containerapp create `
   --registry-password $ACR_PASSWORD
 ```
 
-**環境が既に存在する場合**（本ガイドの実デプロイ例）: `--environment $ENV_NAME` の指定だけで既存の Container Apps 環境を再利用できます。`env create` は不要です。
-
 ### 4.5 Base URL 取得
 
 ```powershell
-$MIMIC_BASE_URL = "https://$(az containerapp show -g $RG -n $APP_NAME --query properties.configuration.ingress.fqdn -o tsv)"
+$mock_BASE_URL = "https://$(az containerapp show -g $RG -n $APP_NAME --query properties.configuration.ingress.fqdn -o tsv)"
 Write-Host "===== 参加者へ配布する値 ====="
-Write-Host "MIMIC_BASE_URL: $MIMIC_BASE_URL"
+Write-Host "mock_BASE_URL: $mock_BASE_URL"
 ```
 
-本ガイドの実デプロイ結果:
+実行例:
 
 ```text
-MIMIC_BASE_URL: https://ca-mimic-shared.wonderfulpebble-9f4a40b9.eastus.azurecontainerapps.io
+mock_BASE_URL: https://<app-name>.<unique-id>.<location>.azurecontainerapps.io
 ```
 
-> **📌 配布する値はこの 1 行だけ**。参加者は `docs/labs/lab2.md` の `<MIMIC_BASE_URL>` にこの値を代入して使用します。
+> **📌 配布する値はこの 1 行だけ**。参加者は `docs/labs/lab2.md` の `<mock_BASE_URL>` にこの値を代入して使用します。
 
 ---
 
@@ -347,7 +601,7 @@ MIMIC_BASE_URL: https://ca-mimic-shared.wonderfulpebble-9f4a40b9.eastus.azurecon
 ### 5.1 ヘルスチェック
 
 ```powershell
-curl.exe "$MIMIC_BASE_URL/healthz"
+curl.exe "$mock_BASE_URL/healthz"; Write-Host ""
 # 期待値: {"status":"ok"}
 ```
 
@@ -358,8 +612,9 @@ $MODEL_ID = "us.anthropic.claude-3-5-haiku-20241022-v1:0"
 $tmp = New-TemporaryFile
 '{"messages":[{"role":"user","content":[{"text":"hello"}]}],"inferenceConfig":{"maxTokens":256}}' |
   Set-Content -Path $tmp -Encoding utf8 -NoNewline
-curl.exe -X POST "$MIMIC_BASE_URL/model/$MODEL_ID/converse" `
-  -H "Content-Type: application/json" --data-binary "@$tmp"
+curl.exe -s -X POST "$mock_BASE_URL/model/$MODEL_ID/converse" `
+  -H "Content-Type: application/json" --data-binary "@$tmp" |
+  ConvertFrom-Json | ConvertTo-Json -Depth 10
 ```
 
 期待レスポンス（抜粋）:
@@ -368,12 +623,22 @@ curl.exe -X POST "$MIMIC_BASE_URL/model/$MODEL_ID/converse" `
   "output": {
     "message": {
       "role": "assistant",
-      "content": [{"text": "Echo: hello"}]
+      "content": [
+        {
+          "text": "[AWS Bedrock mock API] Echo response: hello"
+        }
+      ]
     }
   },
   "stopReason": "end_turn",
-  "usage": {"inputTokens": 1, "outputTokens": 2, "totalTokens": 3},
-  "metrics": {"latencyMs": 200}
+  "usage": {
+    "inputTokens": 1,
+    "outputTokens": 10,
+    "totalTokens": 11
+  },
+  "metrics": {
+    "latencyMs": 200
+  }
 }
 ```
 
@@ -382,21 +647,31 @@ curl.exe -X POST "$MIMIC_BASE_URL/model/$MODEL_ID/converse" `
 ```powershell
 '{"anthropic_version":"bedrock-2023-05-31","max_tokens":256,"messages":[{"role":"user","content":[{"type":"text","text":"hello"}]}]}' |
   Set-Content -Path $tmp -Encoding utf8 -NoNewline
-curl.exe -X POST "$MIMIC_BASE_URL/model/$MODEL_ID/invoke" `
-  -H "Content-Type: application/json" --data-binary "@$tmp"
+curl.exe -s -X POST "$mock_BASE_URL/model/$MODEL_ID/invoke" `
+  -H "Content-Type: application/json" --data-binary "@$tmp" |
+  ConvertFrom-Json | ConvertTo-Json -Depth 10
 Remove-Item $tmp -Force
 ```
 
 期待レスポンス（抜粋）:
 ```json
 {
-  "id": "msg_mock_...",
+  "id": "msg_mock_6173adb4f62c",
   "type": "message",
   "role": "assistant",
   "model": "us.anthropic.claude-3-5-haiku-20241022-v1:0",
-  "content": [{"type": "text", "text": "Echo: hello"}],
+  "content": [
+    {
+      "type": "text",
+      "text": "[AWS Bedrock mock API] Echo response: hello"
+    }
+  ],
   "stop_reason": "end_turn",
-  "usage": {"input_tokens": 1, "output_tokens": 2}
+  "stop_sequence": null,
+  "usage": {
+    "input_tokens": 1,
+    "output_tokens": 10
+  }
 }
 ```
 
@@ -410,15 +685,15 @@ Remove-Item $tmp -Force
 
 ハンズオン開始前にウォームアップしたい場合:
 ```powershell
-curl "$MIMIC_BASE_URL/healthz"  # 1 回叩けば 5〜10 秒でレプリカが起動
+curl "$mock_BASE_URL/healthz"  # 1 回叩けば 5〜10 秒でレプリカが起動
 ```
 
 ### 6.2 イメージ更新
 
 ```powershell
 # コード変更後
-az acr build --registry $ACR_NAME --image "mimic:1.0.1" ./mimic
-az containerapp update -n $APP_NAME -g $RG --image "$ACR_SERVER/mimic:1.0.1"
+az acr build --registry $ACR_NAME --image "mock:1.0.1" ./mock
+az containerapp update -n $APP_NAME -g $RG --image "$ACR_SERVER/mock:1.0.1"
 ```
 
 ### 6.3 ログ確認
@@ -442,10 +717,10 @@ az group delete --name $RG --yes --no-wait
 ```text
 ===== AI Gateway ハンズオン 共通配布値 =====
 
-MIMIC_BASE_URL = https://ca-mimic-shared.wonderfulpebble-9f4a40b9.eastus.azurecontainerapps.io
+mock_BASE_URL = <手順 4.5 で取得した $mock_BASE_URL の値>
 
 確認コマンド (PowerShell):
-  curl.exe "$MIMIC_BASE_URL/healthz"
+  curl.exe "$mock_BASE_URL/healthz"
   → {"status":"ok"} が返れば疎通 OK
 
 詳細は docs/labs/lab2.md を参照してください。

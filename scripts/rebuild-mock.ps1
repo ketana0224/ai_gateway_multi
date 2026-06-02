@@ -1,11 +1,11 @@
-$ErrorActionPreference = "Stop"
+﻿$ErrorActionPreference = "Stop"
 
 $SUBSCRIPTION = "9353f1a1-94a4-4e4b-ae82-c27ea3d07160"
-$RG_INSTRUCTOR = "rg-mcp-instructor"
-$ACR_NAME = "mcpinstructorsvn2j"
-$APP_NAME = "ca-mimic-shared"
+$RG_INSTRUCTOR = "rg-apim-instructor"
+$ACR_NAME = "apiminstructorsvn2j"
+$APP_NAME = "ca-mock-shared"
 $IMAGE_TAG = "2.1.0-bedrock"
-$IMAGE = "mimic:$IMAGE_TAG"
+$IMAGE = "mock:$IMAGE_TAG"
 
 Write-Host "===== Setting subscription ====="
 az account set --subscription $SUBSCRIPTION
@@ -17,7 +17,7 @@ Write-Host "Image: $ACR_SERVER/$IMAGE"
 Write-Host "`n===== Trying ACR Tasks (az acr build) ====="
 $buildOk = $false
 try {
-    az acr build --registry $ACR_NAME --image $IMAGE ./mimic --only-show-errors
+    az acr build --registry $ACR_NAME --image $IMAGE ./mock --only-show-errors
     if ($LASTEXITCODE -eq 0) { $buildOk = $true; Write-Host "ACR build succeeded." }
 } catch {
     Write-Host "ACR Tasks failed: $_"
@@ -26,7 +26,7 @@ try {
 if (-not $buildOk) {
     Write-Host "`n===== Falling back to local docker build ====="
     az acr login --name $ACR_NAME
-    docker build -t "$ACR_SERVER/$IMAGE" ./mimic
+    docker build -t "$ACR_SERVER/$IMAGE" ./mock
     if ($LASTEXITCODE -ne 0) { throw "docker build failed" }
     docker push "$ACR_SERVER/$IMAGE"
     if ($LASTEXITCODE -ne 0) { throw "docker push failed" }
@@ -50,13 +50,13 @@ Write-Host "Container App updated."
 Write-Host "`n===== Waiting for revision rollout (15s) ====="
 Start-Sleep -Seconds 15
 
-$MIMIC_BASE_URL = "https://$(az containerapp show -g $caRg -n $APP_NAME --query properties.configuration.ingress.fqdn -o tsv)"
-Write-Host "MIMIC_BASE_URL: $MIMIC_BASE_URL"
+$mock_BASE_URL = "https://$(az containerapp show -g $caRg -n $APP_NAME --query properties.configuration.ingress.fqdn -o tsv)"
+Write-Host "mock_BASE_URL: $mock_BASE_URL"
 
-Write-Host "`n===== Direct verify against mimic ====="
+Write-Host "`n===== Direct verify against mock ====="
 $tmp = New-TemporaryFile
-'{"messages":[{"role":"user","content":[{"text":"verify new mimic"}]}],"inferenceConfig":{"maxTokens":64}}' | Set-Content -Path $tmp -Encoding utf8 -NoNewline
-curl.exe -s -X POST "$MIMIC_BASE_URL/model/us.anthropic.claude-3-5-haiku-20241022-v1:0/converse" -H "Content-Type: application/json" --data-binary "@$tmp"
+'{"messages":[{"role":"user","content":[{"text":"verify new mock"}]}],"inferenceConfig":{"maxTokens":64}}' | Set-Content -Path $tmp -Encoding utf8 -NoNewline
+curl.exe -s -X POST "$mock_BASE_URL/model/us.anthropic.claude-3-5-haiku-20241022-v1:0/converse" -H "Content-Type: application/json" --data-binary "@$tmp"
 Write-Host ""
 Remove-Item $tmp -Force
 

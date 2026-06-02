@@ -25,27 +25,27 @@
 
 #### 一時停止（課金 0 円だが設定は残る）
 
-1. Azure Portal で `aca-shgw-<initials>` を開く
+1. Azure Portal で `aca-shgw-<id>` を開く
 2. 左メニュー **アプリケーション > スケーリングとレプリカ** を選択
 3. **最小レプリカ数 / 最大レプリカ数** を **0** に変更して **保存**
 
 #### 完全削除
 
-1. `aca-shgw-<initials>` リソース画面 → 上部の **削除** ボタン
+1. `aca-shgw-<id>` リソース画面 → 上部の **削除** ボタン
 2. リソース名を入力して確認 → **削除**
 
-> :information_source: 7-3 で `rg-aigw-handson-<initials>` を RG ごと削除する場合は、この手順はスキップして構いません。
+> :information_source: 7-3 で `rg-aigw-handson-<id>` を RG ごと削除する場合は、この手順はスキップして構いません。
 
 <details>
 <summary>CLI で実行する場合（参考）</summary>
 
 ```pwsh
 # 一時停止
-az containerapp update -g rg-aigw-handson-<initials> -n aca-shgw-<initials> `
+az containerapp update -g rg-aigw-handson-<id> -n aca-shgw-<id> `
   --min-replicas 0 --max-replicas 0
 
 # 完全削除
-az containerapp delete -g rg-aigw-handson-<initials> -n aca-shgw-<initials> --yes
+az containerapp delete -g rg-aigw-handson-<id> -n aca-shgw-<id> --yes
 ```
 
 </details>
@@ -56,20 +56,20 @@ Container App を消した時点で SHGW は切断されますが、APIM 側の 
 
 ### Portal 手順
 
-1. Azure Portal で `apim-aigw-<initials>` を開く
+1. Azure Portal で `apim-aigw-<id>` を開く
 2. 左メニュー **デプロイとインフラストラクチャ > ゲートウェイ**
-3. `gw-ext-tokyo-<initials>` の行を選択 → **削除**
+3. `gw-ext-tokyo-<id>` の行を選択 → **削除**
 4. 確認ダイアログで **ハイ**
 
-> 7-3 で `rg-aigw-handson-<initials>` を RG ごと削除する場合は、この手順はスキップして構いません。
+> 7-3 で `rg-aigw-handson-<id>` を RG ごと削除する場合は、この手順はスキップして構いません。
 
 <details>
 <summary>CLI で実行する場合（参考）</summary>
 
 ```pwsh
-$apim = "apim-aigw-<initials>"
-$rg   = "rg-aigw-handson-<initials>"
-$gw   = "gw-ext-tokyo-<initials>"
+$apim = "apim-aigw-<id>"
+$rg   = "rg-aigw-handson-<id>"
+$gw   = "gw-ext-tokyo-<id>"
 $sub  = (az account show --query id -o tsv)
 
 az rest --method delete `
@@ -94,7 +94,7 @@ az rest --method delete `
 
 ### Portal 手順
 
-1. リソースグループ `rg-aigw-handson-<initials>` を開く
+1. リソースグループ `rg-aigw-handson-<id>` を開く
 2. 上部の **リソース グループの削除** をクリック
 3. リソース グループ名を入力して確認 → **削除**
 
@@ -104,20 +104,20 @@ az rest --method delete `
 <summary>CLI で実行する場合（参考）</summary>
 
 ```pwsh
-az group delete -n rg-aigw-handson-<initials> --yes --no-wait
+az group delete -n rg-aigw-handson-<id> --yes --no-wait
 ```
 
 </details>
 
 ## 7-4. 削除確認
 
-Azure Portal → **リソース グループ** 一覧で `rg-aigw-handson-<initials>` が表示されない（または "削除中" が消える）ことを確認します。
+Azure Portal → **リソース グループ** 一覧で `rg-aigw-handson-<id>` が表示されない（または "削除中" が消える）ことを確認します。
 
 ## チェックリスト
 
-- [ ] Container App `aca-shgw-<initials>` を停止または削除
+- [ ] Container App `aca-shgw-<id>` を停止または削除
 - [ ] （任意・Lab 3-1A 参考実施時のみ）Foundry portal の AI Gateway タブで作成した Basic v2 APIM の紐付けを解除
-- [ ] Azure リソースグループ `rg-aigw-handson-<initials>` を削除
+- [ ] Azure リソースグループ `rg-aigw-handson-<id>` を削除
 
 ## お疲れさまでした
 

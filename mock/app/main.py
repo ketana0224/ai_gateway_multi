@@ -1,4 +1,4 @@
-"""AWS Bedrock Runtime mimic for Anthropic Claude models.
+﻿"""AWS Bedrock Runtime mock for Anthropic Claude models.
 
 Implements two Bedrock Runtime endpoints used by the Microsoft Learn
 "Amazon Bedrock passthrough LLM API" flow:
@@ -6,7 +6,7 @@ Implements two Bedrock Runtime endpoints used by the Microsoft Learn
 - POST /model/{modelId}/converse    — Bedrock Converse API (unified contract)
 - POST /model/{modelId}/invoke      — Bedrock InvokeModel API (Anthropic native body)
 
-The mimic ignores AWS SigV4 (the `Authorization` / `X-Amz-*` headers signed by
+The mock ignores AWS SigV4 (the `Authorization` / `X-Amz-*` headers signed by
 APIM are accepted but **not verified**), so the Microsoft Learn flow works end
 to end without real AWS credentials. APIM signs the request, this service just
 responds with a Bedrock-shaped echo response.
@@ -26,14 +26,14 @@ from urllib.parse import unquote
 
 from fastapi import FastAPI, Request
 
-app = FastAPI(title="AI Gateway Mimic (AWS Bedrock — Anthropic Claude)", version="2.0.0")
+app = FastAPI(title="AI Gateway mock (AWS Bedrock — Anthropic Claude)", version="2.0.0")
 
-MIMIC_SLEEP_SEC = 0.2
+mock_SLEEP_SEC = 0.2
 
 
 def _echo_text(user_text: str) -> str:
     """Build the echo response text."""
-    return f"[AWS Bedrock mimic API] Echo response: {user_text}"
+    return f"[AWS Bedrock mock API] Echo response: {user_text}"
 
 
 def _approx_tokens(text: str) -> int:
@@ -86,7 +86,7 @@ def _extract_text_from_anthropic_messages(messages: list[dict[str, Any]]) -> str
 
 @app.post("/model/{model_id:path}/converse")
 async def bedrock_converse(model_id: str, request: Request) -> dict[str, Any]:
-    await asyncio.sleep(MIMIC_SLEEP_SEC)
+    await asyncio.sleep(mock_SLEEP_SEC)
     raw = await request.body()
     body: dict[str, Any] = await request.json() if raw else {}
 
@@ -110,7 +110,7 @@ async def bedrock_converse(model_id: str, request: Request) -> dict[str, Any]:
             "outputTokens": output_tokens,
             "totalTokens": input_tokens + output_tokens,
         },
-        "metrics": {"latencyMs": int(MIMIC_SLEEP_SEC * 1000)},
+        "metrics": {"latencyMs": int(mock_SLEEP_SEC * 1000)},
     }
 
 
@@ -121,7 +121,7 @@ async def bedrock_converse(model_id: str, request: Request) -> dict[str, Any]:
 
 @app.post("/model/{model_id:path}/invoke")
 async def bedrock_invoke(model_id: str, request: Request) -> dict[str, Any]:
-    await asyncio.sleep(MIMIC_SLEEP_SEC)
+    await asyncio.sleep(mock_SLEEP_SEC)
     raw = await request.body()
     body: dict[str, Any] = await request.json() if raw else {}
 

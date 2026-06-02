@@ -2,13 +2,13 @@
 
 ## ゴール
 
-Lab 3 で構築した **Foundry の gpt-4o-mini (`openai-api`)** に加え、講師配布の **mimic エンドポイント** を **AWS Bedrock Runtime 互換 API** として APIM に取り込み、Foundry 上の OpenAI と AWS Bedrock 上の Anthropic Claude を **一つの AI Gateway に一元登録** してガバナンス（サブスクリプション キー、トークン上限、メトリック収集）を横断適用する構成を完成させる。
+Lab 3 で構築した **Foundry の gpt-4o-mini (`openai-api`)** に加え、講師配布の **mock エンドポイント** を **AWS Bedrock Runtime 互換 API** として APIM に取り込み、Foundry 上の OpenAI と AWS Bedrock 上の Anthropic Claude を **一つの AI Gateway に一元登録** してガバナンス（サブスクリプション キー、トークン上限、メトリック収集）を横断適用する構成を完成させる。
 
-手順は [Microsoft Learn: Amazon Bedrock パススルー言語モデル API を Azure API Management にインポートする](https://learn.microsoft.com/azure/api-management/amazon-bedrock-passthrough-llm-api) をそのまま踏襲します。**本ラボでは実 AWS Bedrock の代わりに `<MIMIC_BASE_URL>` を Backend URL に使い**、APIM が付与する AWS SigV4 署名は mimic が**検証しません**（受け取って無視）。本番では Backend URL と Named Value のキーを実 AWS に差し替えるだけで動きます。
+手順は [Microsoft Learn: Amazon Bedrock パススルー言語モデル API を Azure API Management にインポートする](https://learn.microsoft.com/azure/api-management/amazon-bedrock-passthrough-llm-api) をそのまま踏襲します。**本ラボでは実 AWS Bedrock の代わりに `<mock_BASE_URL>` を Backend URL に使い**、APIM が付与する AWS SigV4 署名は mock が**検証しません**（受け取って無視）。本番では Backend URL と Named Value のキーを実 AWS に差し替えるだけで動きます。
 
 | API | 登録ウィザード | URL ソース | Wizard の主要設定 |
 |---|---|---|---|
-| `bedrock-api` | **Create an AI API → Language Model API** | `<MIMIC_BASE_URL>` | 種類: Passthrough |
+| `bedrock-api` | **Create an AI API → Language Model API** | `<mock_BASE_URL>` | 種類: Passthrough |
 
 ウィザードの主要タブ:
 
@@ -28,18 +28,18 @@ Lab 3 で構築した **Foundry の gpt-4o-mini (`openai-api`)** に加え、講
 ## 事前条件
 
 - [Lab 3](./lab3.md) 完了 — `openai-api`（Foundry の gpt-4o-mini）が APIM に登録済み
-- Lab 2 で確認した `<MIMIC_BASE_URL>` を環境変数 / メモに保持
+- Lab 2 で確認した `<mock_BASE_URL>` を環境変数 / メモに保持
 
 ---
 
-## 4-1. `bedrock-api` — mimic を Language Model API（Passthrough）で登録
+## 4-1. `bedrock-api` — mock を Language Model API（Passthrough）で登録
 
 AWS Bedrock は **OpenAI 互換ではない独自スキーマ**（Converse / InvokeModel）なので、**Passthrough** で登録します。
 
 ### Portal 手順
 
-1. `APIM (apim-aigw-<initials>) → 左メニュー APIs → + API の追加`
-2. **「Create an AI API」** セクション内の **Language Model API** カード（New バッジ）を選択
+1. `APIM (apim-aigw-<id>) → 左メニュー APIs → + API の追加`
+2. **「Create an AI API」** セクション内の **Language Model API** カードを選択
 
 
 **Configure API** タブ:
@@ -48,9 +48,11 @@ AWS Bedrock は **OpenAI 互換ではない独自スキーマ**（Converse / Inv
 |---|---|
 | 表示名 | `Bedrock API` |
 | 名前 | `bedrock-api` |
-| URL | `<MIMIC_BASE_URL>` |
+| URL | `<mock_BASE_URL>` |
+| 説明 | 空欄 |
+| 製品 | 空欄 |
 | パス | `bedrock` |
-| 種類 | **Create a passthrough API** |
+| 種類 | デフォルトの **「Create OpenAI API」** から **「Create a passthrough API」** に変更 |
 | アクセス キー（ヘッダー名 / 値） | 空欄のまま（SigV4 は次節のポリシーで付与） |
 
 **Manage token consumption** タブ: オン（`tokens-per-minute=1000`）。他 2 タブはオフ。
@@ -69,7 +71,7 @@ AWS Bedrock は **OpenAI 互換ではない独自スキーマ**（Converse / Inv
 
 ## 4-1A. Backend の命名をきれいにする（重要）
 
-ウィザード完了直後、`Backends → バックエンド` を開くと **`bedrock-api-openai-endpoint`** という Backend が自動生成されています（ランタイム URL は手順 4-1 で入力した `<MIMIC_BASE_URL>`）。
+ウィザード完了直後、`Backends → バックエンド` を開くと **`bedrock-api-openai-endpoint`** という Backend が自動生成されています（ランタイム URL は手順 4-1 で入力した `<mock_BASE_URL>`）。
 
 > :information_source: **これは Language Model API ウィザードが現在のプレビュー段階で Passthrough/OpenAI を問わず同じ命名ロジック（`<api-name>-openai-endpoint`）を使っている一時的な挙動で、将来のリリースで Bedrock を含む Passthrough API 向けの命名（例: `<api-name>-endpoint`）に修正される予定です**。機能上は今のままでも動きますが、Bedrock 用なのに `openai` が含まれて紛らわしいので、本ラボでは **`bedrock-api-backend` にリネーム**（= 新規作成 + 旧削除）してから次節へ進みます。今後ウィザード側の命名が修正された後にこのラボを実施する場合は、自動生成された Backend 名をそのまま使い、本節の手動作成 + 旧削除は読み替えて省略しても構いません。
 
@@ -81,7 +83,7 @@ AWS Bedrock は **OpenAI 互換ではない独自スキーマ**（Converse / Inv
    |---|---|
    | 名前 | `bedrock-api-backend` |
    | 種類 | **カスタム URL** |
-   | ランタイム URL | `<MIMIC_BASE_URL>` |
+   | ランタイム URL | `<mock_BASE_URL>` |
 
    → 作成。これで Backend 一覧に `bedrock-api-backend` と `bedrock-api-openai-endpoint` が並びます。
 
@@ -102,11 +104,11 @@ AWS Bedrock は **OpenAI 互換ではない独自スキーマ**（Converse / Inv
 | 名前 | `accesskey` |
 | 表示名 | `accesskey` |
 | 種類 | **シークレット** |
-| 値 | `AKIA_DUMMY_HANDSON_KEY` （mimic は検証しないので任意の値で OK）|
+| 値 | `AKIA_DUMMY_HANDSON_KEY` （mock は検証しないので任意の値で OK）|
 
 同じ手順で `secretkey` を作成（値: `secret_dummy_handson_xxxxxxxxxxxxxxxxxxxxxx`）。
 
-> :information_source: 本番で実 AWS Bedrock に向ける場合は、AWS IAM ユーザーのアクセスキー / シークレットキーをここに格納します。本ラボでは mimic 側で署名を検証しないため**ダミー値で構いません**。
+> :information_source: 本番で実 AWS Bedrock に向ける場合は、AWS IAM ユーザーのアクセスキー / シークレットキーをここに格納します。本ラボでは mock 側で署名を検証しないため**ダミー値で構いません**。
 
 ### (2) Inbound ポリシーを貼り付け
 
@@ -122,7 +124,7 @@ MS Learn の「[Configure policies to authenticate requests to the Amazon Bedroc
   2. **body の読み取りを `<set-variable name="requestBody">` で 1 回だけ実行**し、`X-Amz-Content-Sha256` と `Authorization` の両 set-header からは `(string)context.Variables["requestBody"]` で参照（MS Learn 原文は両 set-header の式内で `context.Request.Body.As<string>(preserveContent: true)` を 2 回呼ぶ書き方だが、APIM のビルドによっては 2 回目の呼び出しが `null` を返して `set-header[3]` の C# 式が NullReferenceException で落ちる事象を実機で再現確認したため、`<set-variable>` 経由に統一して堅牢化）。
   3. **`<set-header name="Host">` を削除し、署名計算側では `context.Request.OriginalUrl` を使用**。MS Learn 原文は `<set-header name="Host"><value>@(context.Request.Url.Host)</value></set-header>` を付けているが、現行 APIM ビルドでは `<set-backend-service>` を先に呼んだあとの inbound コンテキストで `context.Request.Url.Host` が空文字列を返し、`set-header[4]` にて `Header can't have empty value.` で 500 になる事象を実機で再現確認した。そもそも `<set-backend-service>` を使う場合 backend へ転送される Host ヘッダーは APIM が自動で付与するため、`<set-header name="Host">` は不要。さらに、SigV4 署名計算内で `host` を取り出すための URL も `context.Request.Url`（途中で書き換えが起きる可能性がある）ではなく **`context.Request.OriginalUrl`**（incoming の不変コピー）を使うように変更。
 - `region` / `service` / `accesskey` / `secretkey` は **`<set-header name="Authorization">` の C# 式の内側でローカル変数として定義**されています（MS Learn 原文どおり）。
-- 実 Bedrock に向ける場合は C# 式内の `var region = "us-east-1";` を Bedrock のリージョンに合わせて書き換えるだけ。本ラボの mimic は署名を検証しないため `us-east-1` のままで OK。
+- 実 Bedrock に向ける場合は C# 式内の `var region = "us-east-1";` を Bedrock のリージョンに合わせて書き換えるだけ。本ラボの mock は署名を検証しないため `us-east-1` のままで OK。
 - `{{accesskey}}` / `{{secretkey}}` は (1) で作成した Named Value をそのまま参照します。
 
 </details>
@@ -134,7 +136,6 @@ MS Learn の「[Configure policies to authenticate requests to the Amazon Bedroc
 <policies>
   <inbound>
     <base />
-    <!-- §4-1A で作った Backend に転送先を固定（ウィザード生成時の転送設定が全置換で消えたため、ここで明示する）-->
     <set-backend-service backend-id="bedrock-api-backend" />
     <set-variable name="now" value="@(DateTime.UtcNow)" />
     <!-- body は 1 回だけ読んで以降は context.Variables["requestBody"] で使い回す（MS Learn 原文では両 set-header 内で Body.As<string>(preserveContent: true) を 2 回呼ぶが、一部 APIM ビルドで 2 回目が null を返して NRE となるため）-->
@@ -185,7 +186,7 @@ MS Learn の「[Configure policies to authenticate requests to the Amazon Bedroc
           hashedPayload = BitConverter.ToString(hash).Replace("-", "").ToLowerInvariant();
         }
 
-        // Canonical query string（本ラボの mimic は query を使わないため空で固定）
+        // Canonical query string（本ラボの mock は query を使わないため空で固定）
         var canonicalQueryString = "";
 
         // Create signed headers and canonical headers
@@ -256,7 +257,7 @@ APIs 一覧に Lab 3 の `openai-api` と合わせて **2 API**、Backends → *
 | API | Backend | 作成方法 | プロトコル / 認証 |
 |---|---|---|---|
 | `openai-api` | `openai-api-ai-endpoint` | ウィザード自動生成 | Foundry エンドポイント / **Managed identity** |
-| `bedrock-api` | `bedrock-api-backend` | **§4-1A で手動作成**（ウィザード生成の `bedrock-api-openai-endpoint` は削除済み）| `<MIMIC_BASE_URL>` / なし（SigV4 は Inbound ポリシーで付与）|
+| `bedrock-api` | `bedrock-api-backend` | **§4-1A で手動作成**（ウィザード生成の `bedrock-api-openai-endpoint` は削除済み）| `<mock_BASE_URL>` / なし（SigV4 は Inbound ポリシーで付与）|
 
 ## 4-4. 動作確認
 
@@ -280,7 +281,7 @@ APIs 一覧に Lab 3 の `openai-api` と合わせて **2 API**、Backends → *
 
 `Send` 実行 → **HTTP 200** と Bedrock Converse 形式の echo レスポンスが返ります。
 
-> :information_source: Test コンソールは `*` ワイルドカードの値を 1 URL セグメントとして扱うため、内部的に `/` を `%2F` に、`:` を `%3A` にエンコードして Backend へ送ります（Request URL に `model%2F...%2Fconverse` と表示される）。mimic 側の FastAPI ルート `/model/{model_id:path}/converse` は `%2F` を `/` としてデコードして受け付け、APIM の SigV4 ポリシー側も canonical path 生成時に modelId を `EscapeDataString` で同形にエンコードして署名するため、**エンコードあり/なし両方の経路で署名整合性が保たれ 200 が返ります**（実機検証済み）。
+> :information_source: Test コンソールは `*` ワイルドカードの値を 1 URL セグメントとして扱うため、内部的に `/` を `%2F` に、`:` を `%3A` にエンコードして Backend へ送ります（Request URL に `model%2F...%2Fconverse` と表示される）。mock 側の FastAPI ルート `/model/{model_id:path}/converse` は `%2F` を `/` としてデコードして受け付け、APIM の SigV4 ポリシー側も canonical path 生成時に modelId を `EscapeDataString` で同形にエンコードして署名するため、**エンコードあり/なし両方の経路で署名整合性が保たれ 200 が返ります**（実機検証済み）。
 >
 > Trace タブを開けば、`set-header (Authorization)` ステップで `AWS4-HMAC-SHA256 Credential=...` ヘッダーが生成されている様子が一行ずつ確認できます。
 
@@ -289,12 +290,12 @@ APIs 一覧に Lab 3 の `openai-api` と合わせて **2 API**、Backends → *
 Lab 3 で作成したサブスクリプション キーをそのまま流用します。
 
 ```pwsh
-$APIM = "https://apim-aigw-<initials>.azure-api.net"
+$APIM = "https://apim-aigw-<id>.azure-api.net"
 $KEY  = "<Lab 3 のサブスクリプション主キー>"
 $MODEL_ID = "us.anthropic.claude-3-5-haiku-20241022-v1:0"
 $tmp  = New-TemporaryFile
 
-# bedrock-api (mimic / Bedrock Converse passthrough with SigV4)
+# bedrock-api (mock / Bedrock Converse passthrough with SigV4)
 '{"messages":[{"role":"user","content":[{"text":"hello via Bedrock"}]}],"inferenceConfig":{"maxTokens":256}}' |
   Set-Content -Path $tmp -Encoding utf8 -NoNewline
 curl.exe -i -X POST "$APIM/bedrock/model/$MODEL_ID/converse" `
@@ -328,15 +329,15 @@ Remove-Item $tmp -Force
 
 ```pwsh
 cd .\bedrock-APIM-direct
-$env:APIM_BEDROCK_URL      = "https://apim-aigw-<initials>.azure-api.net/bedrock"
+$env:APIM_BEDROCK_URL      = "https://apim-aigw-<id>.azure-api.net/bedrock"
 $env:APIM_SUBSCRIPTION_KEY = "<Lab 3 のサブスクリプション主キー>"
 dotnet run
 ```
 
-期待される標準出力（mimic は入力プロンプトをエコーする実装のため、`Program.cs` 中の `userMessage` がそのまま返ってきます）:
+期待される標準出力（mock は入力プロンプトをエコーする実装のため、`Program.cs` 中の `userMessage` がそのまま返ってきます）:
 
 ```text
-[AWS Bedrock mimic API] Echo response: Describe the purpose of a 'hello world' program in one line.
+[AWS Bedrock mock API] Echo response: Describe the purpose of a 'hello world' program in one line.
 ```
 
 #### 確認ポイント
@@ -346,13 +347,13 @@ dotnet run
 
 ## チェックリスト
 
-- [ ] **Language Model API** ウィザード（Passthrough）で `bedrock-api` を mimic 向けに作成した
-- [ ] §4-1A で **`bedrock-api-backend`（カスタム URL = `<MIMIC_BASE_URL>`）** を手動作成し、ウィザード自動生成の `bedrock-api-openai-endpoint` を削除した
-- [ ] Named Values に `accesskey` / `secretkey` をシークレットとして登録した（mimic 向けはダミー値で可）
+- [ ] **Language Model API** ウィザード（Passthrough）で `bedrock-api` を mock 向けに作成した
+- [ ] §4-1A で **`bedrock-api-backend`（カスタム URL = `<mock_BASE_URL>`）** を手動作成し、ウィザード自動生成の `bedrock-api-openai-endpoint` を削除した
+- [ ] Named Values に `accesskey` / `secretkey` をシークレットとして登録した（mock 向けはダミー値で可）
 - [ ] §4-2(2) の **改良版 SigV4 ポリシー XML**（`<set-backend-service backend-id="bedrock-api-backend" />` + body 1 回読み + Host set-header なし + `OriginalUrl` 使用）を `bedrock-api` の Inbound に貼り付けた
 - [ ] サブスクリプション キーで `openai-api` / `bedrock-api` の 2 API が 200 を返す
 - [ ] APIM Test コンソール（または curl）で **HTTP 200** と Bedrock Converse 形式の echo レスポンスを確認した
 - [ ] APIM Test コンソールの Trace で `Authorization: AWS4-HMAC-SHA256 ...` ヘッダーが生成されていることを確認した
-- [ ] `bedrock-APIM-direct/` の AWS ネイティブ SDK サンプル（`dotnet run`）が APIM 経由で `[AWS Bedrock mimic API] Echo response: ...` を返した
+- [ ] `bedrock-APIM-direct/` の AWS ネイティブ SDK サンプル（`dotnet run`）が APIM 経由で `[AWS Bedrock mock API] Echo response: ...` を返した
 
 完了したら [Lab 5 — 外部環境（AWS 相当）で APIM Self-hosted Gateway を展開](./lab5.md) へ。
