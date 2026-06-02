@@ -129,13 +129,14 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
    | 説明 | `AppRequests の SHGW 行のみ参照可（ABAC 条件付き）` |
    | ベース アクセス許可 | 最初から始める |
 
-4. **アクセス許可** タブ → **アクセス許可の追加** → 以下を追加:
+4. **アクセス許可** タブ → **アクセス許可の追加** をクリックし、右パネルの検索ボックスで以下を検索して追加:
    - `Microsoft.OperationalInsights/workspaces/read`（Actions）
    - `Microsoft.OperationalInsights/workspaces/query/read`（Actions）
    - `Microsoft.Resources/subscriptions/read`（Actions）
    - `Microsoft.Resources/subscriptions/resources/read`（Actions）
    - `Microsoft.Resources/subscriptions/resourceGroups/read`（Actions）
-   - `Microsoft.OperationalInsights/workspaces/tables/data/read`（DataActions）
+   - `Microsoft.OperationalInsights/workspaces/tables/data/read`（DataActions）  
+     ※ DataActions は検索結果の **「データ アクション」** タブに表示されます
 5. **割り当て可能なスコープ** タブ → **＋ スコープの追加** をクリックし、サブスクリプションを選択（RG のみではサブスクリプションレベルのナビゲーションに使えないため）
 6. **確認と作成** → **作成**
 
