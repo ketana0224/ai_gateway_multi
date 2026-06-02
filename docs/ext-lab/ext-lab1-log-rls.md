@@ -133,7 +133,7 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
    - `Microsoft.OperationalInsights/workspaces/read`（Actions）
    - `Microsoft.OperationalInsights/workspaces/query/read`（Actions）
    - `Microsoft.OperationalInsights/workspaces/tables/data/read`（DataActions）
-5. **割り当て可能なスコープ** タブ → 現在のサブスクリプションが含まれていることを確認
+5. **割り当て可能なスコープ** タブ → `rg-aigw-handson-<id>` のリソースグループが自動入力されていることを確認（変更不要）
 6. **確認と作成** → **作成**
 
 > **ℹ️ ロール作成は 2-3 分かかります。** 次の手順に進む前に少し待ってください。
