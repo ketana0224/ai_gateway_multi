@@ -183,9 +183,10 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
     | 項目 | 値 |
     |---|---|
     | 属性ソース | **リソース** |
-    | 属性 | **列の値** |
+    | 属性 | **列の値 (キーは列名)** |
     | キー | `AppRoleName` |
     | 演算子 | **StringEquals** |
+    | 値または属性 | **値** （ラジオボタン「● 値 ○ 属性」→「値」を選択） |
     | 値 | `apim-aigw-<id> <gwName>`（Lab 6 §6-3 で確認した SHGW の AppRoleName） |
 
     > **ℹ️ 例**: `apim-aigw-user99 aws-ap-northeast-1`  
