@@ -149,7 +149,11 @@ if ($role.assignableScopes -notcontains "/subscriptions/$sub") {
 $role | ConvertTo-Json -Depth 10 | az role definition update --role-definition "@-"
 ```
 
-更新後、EL1-4 に進んでください。
+> **⚠️ ロール定義の更新だけでは不十分です。**  
+> `Microsoft.Resources/subscriptions/resources/read` はサブスクリプションスコープで呼び出されるため、  
+> **ロール割り当てのスコープも subscription に変更する必要があります。**  
+> ワークスペース/RG スコープで割り当てていた場合は、その割り当てを削除してから  
+> サブスクリプションスコープで再割り当てしてください（手順は EL1-4）。
 
 ---
 
@@ -181,6 +185,23 @@ $role | ConvertTo-Json -Depth 10 | az role definition update --role-definition "
 ## EL1-4. 条件付きロール割り当て
 
 作成したカスタムロールを、ABAC 条件付きでテストユーザーに割り当てます。
+
+### 事前確認：既存の割り当てを削除する
+
+以前 `log-aigw-<id>` や `rg-aigw-handson-<id>` スコープでロールを割り当てていた場合は、  
+**先に削除してから**サブスクリプションスコープで再割り当てしてください。
+
+```powershell
+# ワークスペーススコープの既存割り当てを削除（存在すれば）
+$sub = (az account show --query id -o tsv)
+$user = (az ad user list --filter "userPrincipalName eq 'rls-test@$(
+    (az account show --query tenantId -o tsv |
+     ForEach-Object { (az ad user list --filter "startswith(userPrincipalName,'rls-test')" --query '[0].userPrincipalName' -o tsv).Split('@')[1] })
+)'" --query '[0].id' -o tsv)
+az role assignment list --assignee $user --role "Log Analytics SHGW Viewer" -o table
+# 上記で表示されたスコープを確認し、/subscriptions/<id>/resourceGroups/... 以下なら削除:
+# az role assignment delete --assignee $user --role "Log Analytics SHGW Viewer" --scope "<上記のスコープ>"
+```
 
 ### ロール割り当て手順
 
