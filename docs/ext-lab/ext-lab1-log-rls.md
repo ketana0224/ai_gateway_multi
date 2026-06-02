@@ -231,17 +231,20 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 
 ### ログイン方法 A: Azure Portal（推奨）
 
-1. InPrivate/シークレットウィンドウを開く
-2. `https://portal.azure.com` へアクセス
-3. `rls-test@<yourtenantdomain>` でサインイン
+1. **通常のブラウザー（管理者アカウント）** で `log-aigw-<id>` → **ログ** を開き、アドレスバーの URL をコピーしておく
 
-   > **ℹ️ ポータルが「サブスクリプションをお持ちでない場合は…」と表示されるのは正常です。**  
-   > このユーザーはサブスクリプション全体ではなく Log Analytics ワークスペースのみに  
-   > ロールが割り当てられているため、サブスクリプション一覧には何も表示されません。
+   > **ℹ️ URL の例**:  
+   > `https://portal.azure.com/#@<tenant>/resource/subscriptions/<subId>/resourceGroups/rg-aigw-handson-<id>/providers/Microsoft.OperationalInsights/workspaces/log-aigw-<id>/logs`
 
-4. 上部検索バー（`G+/`）に `log-aigw-<id>` と入力 → 候補に出た Log Analytics ワークスペースをクリック
-5. 左メニュー → **ログ** を開く
-6. 以下の KQL を順に実行して結果を確認する
+2. InPrivate/シークレットウィンドウを開く
+3. 手順 1 でコピーした URL をアドレスバーに貼り付けてアクセス
+4. `rls-test@<yourtenantdomain>` でサインイン → Log Analytics の **ログ** 画面が開く
+
+   > **ℹ️ ポータルのホームが「サブスクリプションをお持ちでない場合は…」と表示されるのは正常です。**  
+   > テストユーザーはサブスクリプション全体ではなく Log Analytics ワークスペースのみに  
+   > ロールが割り当てられているため、検索バーではリソースが見つかりません。直接 URL でアクセスしてください。
+
+5. 以下の KQL を順に実行して結果を確認する
 
 ### ログイン方法 B: Azure CLI（PowerShell）
 
