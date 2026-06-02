@@ -159,8 +159,8 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 
 #### アクションの追加
 
-6. **アクションの追加** をクリック
-7. `Microsoft.OperationalInsights/workspaces/tables/data/read`（ワークスペース データの読み取り）を選択 → **選択**
+6. **「操作の選択」** リンクをクリック
+7. 右パネルで **「Read workspace data」** にチェックを入れる → **選択**
 
 #### 式の構築（テーブル名の制限）
 
