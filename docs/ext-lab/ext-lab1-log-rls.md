@@ -119,45 +119,10 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 > **ℹ️ 情報**: 組み込みロール「**Log Analytics データ閲覧者**」が上記を含む場合はそのまま使用できます。  
 > ポータルで確認してロールが存在する場合は EL1-4 に進んでください。
 
-### 既存ロールを更新する（ロール作成済みの場合）
+> **ℹ️ ロール作成済みの場合**: 古い定義（`resources/read` 未含）で作成済みであれば、  
+> いったん削除してから以下の手順で再作成してください。
 
-すでに `Log Analytics SHGW Viewer` を作成している場合は、以下の手順でアクションとスコープを追加してください。
-
-**ポータル操作**
-
-1. Azure Portal → **サブスクリプション** → **アクセス制御 (IAM)** → **ロール** タブ
-2. `Log Analytics SHGW Viewer` を検索 → 行末の **…** → **編集**
-3. **アクセス許可** タブ → **アクセス許可の追加** → 不足している 2 アクションを追加:
-   - `Microsoft.Resources/subscriptions/resources/read`
-   - `Microsoft.Resources/subscriptions/resourceGroups/read`
-4. **割り当て可能なスコープ** タブ → RG のみの場合は **＋ スコープの追加** でサブスクリプションを追加
-5. **更新**
-
-**CLI 操作（PowerShell）**
-
-```powershell
-$sub = (az account show --query id -o tsv)
-$role = (az role definition list --name "Log Analytics SHGW Viewer" | ConvertFrom-Json)[0]
-$role.permissions[0].actions += @(
-    "Microsoft.Resources/subscriptions/resources/read",
-    "Microsoft.Resources/subscriptions/resourceGroups/read"
-)
-# サブスクリプションスコープが未追加なら追加
-if ($role.assignableScopes -notcontains "/subscriptions/$sub") {
-    $role.assignableScopes += "/subscriptions/$sub"
-}
-$role | ConvertTo-Json -Depth 10 | az role definition update --role-definition "@-"
-```
-
-> **⚠️ ロール定義の更新だけでは不十分です。**  
-> `Microsoft.Resources/subscriptions/resources/read` はサブスクリプションスコープで呼び出されるため、  
-> **ロール割り当てのスコープも subscription に変更する必要があります。**  
-> ワークスペース/RG スコープで割り当てていた場合は、その割り当てを削除してから  
-> サブスクリプションスコープで再割り当てしてください（手順は EL1-4）。
-
----
-
-### ポータルでカスタムロールを新規作成する
+### ポータルでカスタムロールを作成する
 
 1. Azure Portal → リソースグループ `rg-aigw-handson-<id>` → **アクセス制御 (IAM)**
 2. **＋ 追加** → **カスタム ロールの追加** をクリック
