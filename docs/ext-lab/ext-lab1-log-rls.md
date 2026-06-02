@@ -223,52 +223,44 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 
 > **⏳ 有効化まで最大 15 分かかります。** 次の手順に進む前に少し待ってください。
 
+### ポータルナビゲーション用 Reader の追加
+
+Azure Portal のリソースブレードはサブスクリプションレベルで `Microsoft.Resources/subscriptions/resources/read` を呼び出すため、  
+このアクションがないと直接 URL でも 401 になります。ポータルからの検証を行うために以下を追加で割り当てます。
+
+1. Azure Portal → サブスクリプション → **アクセス制御 (IAM)**
+2. **＋ ロールの割り当ての追加** をクリック
+3. **ロール** タブ: `閲覧者`（Reader）を選択 → **次へ**
+4. **メンバー** タブ: `rls-test@<yourtenantdomain>` を選択 → **次へ**
+5. **条件** タブはスキップ → **「レビューと割り当て」** をクリック
+
+> **ℹ️ Reader at subscription はポータルナビゲーション専用**です。  
+> データ読み取り（DataActions）は ABAC 条件付きロールが引き続き制御します。  
+> Reader には `DataActions` が含まれないため、行レベルフィルタは無効化されません。
+
 ---
 
 ## EL1-5. テストユーザーで KQL 検証
 
 テストユーザーとしてログインし、ABAC 条件が正しく機能していることを確認します。
 
-> **⚠️ Azure Portal（ブラウザー）からのアクセスについて**  
-> Azure Portal のリソースブレードはサブスクリプションレベルの  
-> `Microsoft.Resources/subscriptions/resources/read` を内部で呼び出します。  
-> テストユーザーはワークスペーススコープのロールのみのため、  
-> **直接 URL でも「アクセス許可がありません (401)」になります。**  
-> 以下の **Azure CLI 方式** で検証してください。
+### ログイン手順
 
-### 事前準備: ワークスペース ID の確認（管理者アカウントで実行）
-
-```powershell
-# 管理者アカウントでワークスペース ID（GUID）を取得
-$WS_ID = az monitor log-analytics workspace show `
-  --resource-group "rg-aigw-handson-<id>" `
-  --workspace-name "log-aigw-<id>" `
-  --query customerId -o tsv
-Write-Host "Workspace ID: $WS_ID"
-```
-
-> **ℹ️** `customerId` が Log Analytics クエリ API で使用するワークスペース ID（GUID）です。  
-> この値をメモしてください。
-
----
-
-### テストユーザーで KQL 検証（Azure CLI）
-
-```powershell
-# 別の PowerShell ウィンドウを開き、テストユーザーとしてログイン
-az login --use-device-code --allow-no-subscriptions
-# ブラウザでデバイスコードを入力し rls-test@<yourtenantdomain> でサインイン
-
-# ワークスペース ID（管理者セッションで確認した GUID）をセット
-$WS_ID = "<workspaceGUID>"
-```
+1. InPrivate/シークレットウィンドウを開く
+2. `https://portal.azure.com` へアクセス
+3. `rls-test@<yourtenantdomain>` でサインイン
+4. 上部検索バー（`G+/`）に `log-aigw-<id>` と入力 → Log Analytics ワークスペースをクリック
+5. 左メニュー → **ログ** を開く
+6. 以下の KQL を順に実行して結果を確認する
 
 ### 検証 1: AppRequests の全件確認
 
-```powershell
-# 結果: SHGW 行のみ表示されるはず（cloud APIM 行は見えない）
-az monitor log-analytics query --workspace $WS_ID --analytics-query `
-  "AppRequests | project TimeGenerated, AppRoleName, Name, ResultCode | order by TimeGenerated desc | take 20"
+```kql
+// 結果: SHGW 行のみ表示されるはず（cloud APIM 行は見えない）
+AppRequests
+| project TimeGenerated, AppRoleName, Name, ResultCode
+| order by TimeGenerated desc
+| take 20
 ```
 
 **期待される結果**:
@@ -282,9 +274,10 @@ az monitor log-analytics query --workspace $WS_ID --analytics-query `
 
 ### 検証 2: AppDependencies へのアクセス試行
 
-```powershell
-# 結果: エラーまたは 0 件になるはず（テーブルアクセス不可）
-az monitor log-analytics query --workspace $WS_ID --analytics-query "AppDependencies | take 5"
+```kql
+// 結果: エラーまたは 0 件になるはず（テーブルアクセス不可）
+AppDependencies
+| take 5
 ```
 
 **期待される結果**: `0 行` または アクセス拒否エラー
@@ -293,10 +286,10 @@ az monitor log-analytics query --workspace $WS_ID --analytics-query "AppDependen
 
 ### 検証 3: AppRoleName で集計
 
-```powershell
-# SHGW の AppRoleName のみが集計される
-az monitor log-analytics query --workspace $WS_ID --analytics-query `
-  "AppRequests | summarize count() by AppRoleName"
+```kql
+// SHGW の AppRoleName のみが集計される
+AppRequests
+| summarize count() by AppRoleName
 ```
 
 **期待される結果**:
