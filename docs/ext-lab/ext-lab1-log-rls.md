@@ -112,6 +112,8 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 |---|---|---|
 | Action | `Microsoft.OperationalInsights/workspaces/read` | ワークスペースのポータル表示 |
 | Action | `Microsoft.OperationalInsights/workspaces/query/read` | KQL クエリ実行 |
+| Action | `Microsoft.Resources/subscriptions/resources/read` | ポータルナビゲーション（リソース一覧取得） |
+| Action | `Microsoft.Resources/subscriptions/resourceGroups/read` | ポータルナビゲーション（RG 表示） |
 | DataAction | `Microsoft.OperationalInsights/workspaces/tables/data/read` | テーブルデータ読み取り（ABAC 条件適用先） |
 
 > **ℹ️ 情報**: 組み込みロール「**Log Analytics データ閲覧者**」が上記を含む場合はそのまま使用できます。  
@@ -132,8 +134,10 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 4. **アクセス許可** タブ → **アクセス許可の追加** → 以下を追加:
    - `Microsoft.OperationalInsights/workspaces/read`（Actions）
    - `Microsoft.OperationalInsights/workspaces/query/read`（Actions）
+   - `Microsoft.Resources/subscriptions/resources/read`（Actions）
+   - `Microsoft.Resources/subscriptions/resourceGroups/read`（Actions）
    - `Microsoft.OperationalInsights/workspaces/tables/data/read`（DataActions）
-5. **割り当て可能なスコープ** タブ → `rg-aigw-handson-<id>` のリソースグループが自動入力されていることを確認（変更不要）
+5. **割り当て可能なスコープ** タブ → **＋ スコープの追加** をクリックし、サブスクリプションを選択（RG のみではサブスクリプションレベルのナビゲーションに使えないため）
 6. **確認と作成** → **作成**
 
 > **ℹ️ ロール作成は 2-3 分かかります。** 次の手順に進む前に少し待ってください。
@@ -146,11 +150,14 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 
 ### ロール割り当て手順
 
-1. Azure Portal → `log-aigw-<id>` → **アクセス制御 (IAM)**
+1. Azure Portal → **サブスクリプション** → **アクセス制御 (IAM)**
 2. **＋ ロールの割り当ての追加** をクリック
 3. **ロール** タブ: `Log Analytics SHGW Viewer` を検索して選択 → **次へ**
 4. **メンバー** タブ: `rls-test@<yourtenantdomain>` を選択 → **次へ**
 5. **条件** タブ → **条件を追加する** をクリック
+
+   > **ℹ️** サブスクリプションスコープで割り当てることで、ポータルナビゲーションに必要な  
+   > Resource read アクションと DataAction ABAC 条件の両方を 1 つのロールでカバーします。
 
 ### ABAC 条件の設定
 
@@ -222,21 +229,6 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 > 既に割り当てられていると、ABAC 条件が無効化されます。既存の広範なロール割り当てを先に削除してください。
 
 > **⏳ 有効化まで最大 15 分かかります。** 次の手順に進む前に少し待ってください。
-
-### ポータルナビゲーション用 Reader の追加
-
-Azure Portal のリソースブレードはサブスクリプションレベルで `Microsoft.Resources/subscriptions/resources/read` を呼び出すため、  
-このアクションがないと直接 URL でも 401 になります。ポータルからの検証を行うために以下を追加で割り当てます。
-
-1. Azure Portal → サブスクリプション → **アクセス制御 (IAM)**
-2. **＋ ロールの割り当ての追加** をクリック
-3. **ロール** タブ: `閲覧者`（Reader）を選択 → **次へ**
-4. **メンバー** タブ: `rls-test@<yourtenantdomain>` を選択 → **次へ**
-5. **条件** タブはスキップ → **「レビューと割り当て」** をクリック
-
-> **ℹ️ Reader at subscription はポータルナビゲーション専用**です。  
-> データ読み取り（DataActions）は ABAC 条件付きロールが引き続き制御します。  
-> Reader には `DataActions` が含まれないため、行レベルフィルタは無効化されません。
 
 ---
 
