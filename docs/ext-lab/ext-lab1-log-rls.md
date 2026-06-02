@@ -112,6 +112,7 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 |---|---|---|
 | Action | `Microsoft.OperationalInsights/workspaces/read` | ワークスペースのポータル表示 |
 | Action | `Microsoft.OperationalInsights/workspaces/query/read` | KQL クエリ実行 |
+| Action | `Microsoft.Resources/subscriptions/read` | **サブスクリプションをポータルに表示**（これがないと「ようこそ」画面になる） |
 | Action | `Microsoft.Resources/subscriptions/resources/read` | ポータルナビゲーション（リソース一覧取得） |
 | Action | `Microsoft.Resources/subscriptions/resourceGroups/read` | ポータルナビゲーション（RG 表示） |
 | DataAction | `Microsoft.OperationalInsights/workspaces/tables/data/read` | テーブルデータ読み取り（ABAC 条件適用先） |
@@ -131,6 +132,7 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 4. **アクセス許可** タブ → **アクセス許可の追加** → 以下を追加:
    - `Microsoft.OperationalInsights/workspaces/read`（Actions）
    - `Microsoft.OperationalInsights/workspaces/query/read`（Actions）
+   - `Microsoft.Resources/subscriptions/read`（Actions）
    - `Microsoft.Resources/subscriptions/resources/read`（Actions）
    - `Microsoft.Resources/subscriptions/resourceGroups/read`（Actions）
    - `Microsoft.OperationalInsights/workspaces/tables/data/read`（DataActions）
