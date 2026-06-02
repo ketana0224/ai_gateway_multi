@@ -116,12 +116,6 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 | Action | `Microsoft.Resources/subscriptions/resourceGroups/read` | ポータルナビゲーション（RG 表示） |
 | DataAction | `Microsoft.OperationalInsights/workspaces/tables/data/read` | テーブルデータ読み取り（ABAC 条件適用先） |
 
-> **ℹ️ 情報**: 組み込みロール「**Log Analytics データ閲覧者**」が上記を含む場合はそのまま使用できます。  
-> ポータルで確認してロールが存在する場合は EL1-4 に進んでください。
-
-> **ℹ️ ロール作成済みの場合**: 古い定義（`resources/read` 未含）で作成済みであれば、  
-> いったん削除してから以下の手順で再作成してください。
-
 ### ポータルでカスタムロールを作成する
 
 1. Azure Portal → リソースグループ `rg-aigw-handson-<id>` → **アクセス制御 (IAM)**
@@ -151,23 +145,6 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
 
 作成したカスタムロールを、ABAC 条件付きでテストユーザーに割り当てます。
 
-### 事前確認：既存の割り当てを削除する
-
-以前 `log-aigw-<id>` や `rg-aigw-handson-<id>` スコープでロールを割り当てていた場合は、  
-**先に削除してから**サブスクリプションスコープで再割り当てしてください。
-
-```powershell
-# ワークスペーススコープの既存割り当てを削除（存在すれば）
-$sub = (az account show --query id -o tsv)
-$user = (az ad user list --filter "userPrincipalName eq 'rls-test@$(
-    (az account show --query tenantId -o tsv |
-     ForEach-Object { (az ad user list --filter "startswith(userPrincipalName,'rls-test')" --query '[0].userPrincipalName' -o tsv).Split('@')[1] })
-)'" --query '[0].id' -o tsv)
-az role assignment list --assignee $user --role "Log Analytics SHGW Viewer" -o table
-# 上記で表示されたスコープを確認し、/subscriptions/<id>/resourceGroups/... 以下なら削除:
-# az role assignment delete --assignee $user --role "Log Analytics SHGW Viewer" --scope "<上記のスコープ>"
-```
-
 ### ロール割り当て手順
 
 1. Azure Portal → **サブスクリプション** → **アクセス制御 (IAM)**
@@ -175,9 +152,6 @@ az role assignment list --assignee $user --role "Log Analytics SHGW Viewer" -o t
 3. **ロール** タブ: `Log Analytics SHGW Viewer` を検索して選択 → **次へ**
 4. **メンバー** タブ: `rls-test@<yourtenantdomain>` を選択 → **次へ**
 5. **条件** タブ → **条件を追加する** をクリック
-
-   > **ℹ️** サブスクリプションスコープで割り当てることで、ポータルナビゲーションに必要な  
-   > Resource read アクションと DataAction ABAC 条件の両方を 1 つのロールでカバーします。
 
 ### ABAC 条件の設定
 
