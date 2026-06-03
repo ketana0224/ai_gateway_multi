@@ -27,3 +27,5 @@ scripts/set-env-instructor.ps1
 
 # Node.js
 node_modules/
+package.json
+package-lock.json
