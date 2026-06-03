@@ -24,3 +24,6 @@ spec.md
 
 # 本番値を含む講師用環境変数ファイル（example をコピーして作成）
 scripts/set-env-instructor.ps1
+
+# Node.js
+node_modules/
