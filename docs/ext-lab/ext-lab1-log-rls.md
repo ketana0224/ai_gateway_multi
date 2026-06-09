@@ -3,7 +3,7 @@
 ## ゴール
 
 本 Lab では、Azure ABAC（属性ベースのアクセス制御）条件を Log Analytics ワークスペースのロール割り当てに付与し、  
-**SHGW 経由リクエストの行（`AppRoleName` = `apim-aigw-<id> aws-ap-northeast-1`）のみを参照できるユーザー** を作成して検証します。
+**SHGW 経由リクエストの行（`AppRoleName` = `apim-aigw-handson-<id> aws-ap-northeast-1`）のみを参照できるユーザー** を作成して検証します。
 
 | 検証項目 | 内容 |
 |---|---|
@@ -16,8 +16,8 @@
 ```
 log-aigw-<id> ワークスペース
  └ AppRequests テーブル
-     ├ AppRoleName = "apim-aigw-<id>"          ← cloud APIM 行 (非表示)
-     └ AppRoleName = "apim-aigw-<id> <gwName>" ← SHGW 行     (表示)
+     ├ AppRoleName = "apim-aigw-handson-<id>"          ← cloud APIM 行 (非表示)
+     └ AppRoleName = "apim-aigw-handson-<id> <gwName>" ← SHGW 行     (表示)
 ```
 
 - **講師アカウント（Owner）**: AppRequests の全行 + AppDependencies も参照可
@@ -71,7 +71,7 @@ AppRequests
 | order by count_ desc
 ```
 
-> **ℹ️ 情報**: cloud APIM（`apim-aigw-<id>`）と SHGW（`apim-aigw-<id> <gwName>`）両方の行が  
+> **ℹ️ 情報**: cloud APIM（`apim-aigw-handson-<id>`）と SHGW（`apim-aigw-handson-<id> <gwName>`）両方の行が  
 > 確認できていれば前提データは揃っています。
 
 ---
@@ -202,9 +202,9 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
     | 属性 | **列の値 (キーは列名)** |
     | キー | `AppRoleName` |
     | 演算子 | **StringEquals** |
-    | 値 | `apim-aigw-<id> <gwName>`（Lab 6 §6-3 で確認した SHGW の AppRoleName） |
+    | 値 | `apim-aigw-handson-<id> <gwName>`（Lab 6 §6-3 で確認した SHGW の AppRoleName） |
 
-    > **ℹ️ 例**: `apim-aigw-user99 aws-ap-northeast-1`  
+    > **ℹ️ 例**: `apim-aigw-handson-user99 aws-ap-northeast-1`  
     > Lab 6 §6-3 の KQL `AppRequests | summarize count() by AppRoleName` で確認した値を使用してください。
 
 #### 式をグループ化（AND 条件）
@@ -225,7 +225,7 @@ Log Analytics のきめ細かい RBAC には、以下の 2 種類のアクショ
   (
     @Resource[Microsoft.OperationalInsights/workspaces/tables:name] StringEquals 'AppRequests'
     AND
-    @Resource[Microsoft.OperationalInsights/workspaces/tables/record:AppRoleName<$key_case_sensitive$>] StringEquals 'apim-aigw-<id> aws-ap-northeast-1'
+    @Resource[Microsoft.OperationalInsights/workspaces/tables/record:AppRoleName<$key_case_sensitive$>] StringEquals 'apim-aigw-handson-<id> aws-ap-northeast-1'
   )
 )
 ```
@@ -270,8 +270,8 @@ AppRequests
 
 | AppRoleName | 表示 |
 |---|---|
-| `apim-aigw-<id>` | ❌ 0 件（非表示） |
-| `apim-aigw-<id> <gwName>` | ✅ 表示される |
+| `apim-aigw-handson-<id>` | ❌ 0 件（非表示） |
+| `apim-aigw-handson-<id> <gwName>` | ✅ 表示される |
 
 ---
 
@@ -300,10 +300,10 @@ AppRequests
 ```
 AppRoleName                          count_
 -----------------------------------------
-apim-aigw-<id> aws-ap-northeast-1   XX
+apim-aigw-handson-<id> aws-ap-northeast-1   XX
 ```
 
-cloud APIM の `apim-aigw-<id>` は集計結果に表れないことを確認します。
+cloud APIM の `apim-aigw-handson-<id>` は集計結果に表れないことを確認します。
 
 ---
 
@@ -373,7 +373,7 @@ $CONDITION = @"
   (
     @Resource[Microsoft.OperationalInsights/workspaces/tables:name] StringEquals 'AppRequests'
     AND
-    @Resource[Microsoft.OperationalInsights/workspaces/tables/record:AppRoleName<`$key_case_sensitive`$>] StringEquals 'apim-aigw-<id> aws-ap-northeast-1'
+    @Resource[Microsoft.OperationalInsights/workspaces/tables/record:AppRoleName<`$key_case_sensitive`$>] StringEquals 'apim-aigw-handson-<id> aws-ap-northeast-1'
   )
 )
 "@
@@ -442,7 +442,7 @@ az role assignment list --scope "/subscriptions/$(az account show --query id -o 
 - [ ] カスタムロール `Log Analytics SHGW Viewer` を作成（DataAction 含む）
 - [ ] テストユーザーに ABAC 条件付きロール割り当てを実施
   - テーブル名: `AppRequests`
-  - 列値: `AppRoleName = apim-aigw-<id> <gwName>`
+  - 列値: `AppRoleName = apim-aigw-handson-<id> <gwName>`
 - [ ] テストユーザーで KQL を実行:
   - [ ] `AppRequests` → SHGW 行のみ表示、cloud APIM 行は非表示
   - [ ] `AppDependencies` → 0 件 / エラー

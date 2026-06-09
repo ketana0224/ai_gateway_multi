@@ -56,7 +56,7 @@ Container App を消した時点で SHGW は切断されますが、APIM 側の 
 
 ### Portal 手順
 
-1. Azure Portal で `apim-aigw-<id>` を開く
+1. Azure Portal で `apim-aigw-handson-<id>` を開く
 2. 左メニュー **デプロイとインフラストラクチャ > ゲートウェイ**
 3. `gw-ext-tokyo-<id>` の行を選択 → **削除**
 4. 確認ダイアログで **ハイ**
@@ -67,7 +67,7 @@ Container App を消した時点で SHGW は切断されますが、APIM 側の 
 <summary>CLI で実行する場合（参考）</summary>
 
 ```pwsh
-$apim = "apim-aigw-<id>"
+$apim = "apim-aigw-handson-<id>"
 $rg   = "rg-aigw-handson-<id>"
 $gw   = "gw-ext-tokyo-<id>"
 $sub  = (az account show --query id -o tsv)

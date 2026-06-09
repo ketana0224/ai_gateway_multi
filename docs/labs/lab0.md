@@ -55,7 +55,7 @@
 
 | 種別 | 例 | あなたの値 |
 |---|---|---|
-| APIM | `apim-aigw-<id>` | `apim-aigw-______` |
+| APIM | `apim-aigw-handson-<id>` | `apim-aigw-handson-______` |
 | App Insights | `appi-aigw-<id>` | `appi-aigw-______` |
 | Log Analytics | `log-aigw-<id>` | `log-aigw-______` |
 | Container Apps 環境 | `cae-aigw-ext-<id>` | `cae-aigw-ext-______` |

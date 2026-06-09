@@ -202,7 +202,7 @@
 <tr>
 <td>3</td>
 <td><strong>OpenTelemetry によるモニタリング / トレーシング</strong></td>
-<td>Lab 6 + <a href="./docs/Otel_Info.md">docs/Otel_Info.md</a></td>
+<td>Lab 6 + docs/Otel_Info.md</td>
 <td>APIM ↔ Foundry ↔ SHGW を貫通する <strong>W3C traceparent</strong> ベースの分散トレースを Application Insights で可視化。ベンダー別トークン消費・レイテンシをメトリクス化</td>
 </tr>
 </tbody></table>
@@ -238,7 +238,7 @@
 </code></pre>
 <h2 id="ハンズオン目次">ハンズオン目次</h2>
 <blockquote>
-<p>:warning: <strong>この手順は受講者用です。</strong> 先に <a href="./docs/instructor-setup.md">docs/instructor-setup.md</a> — 講師側の事前準備（mock エンドポイントと共有 Container Apps 環境のデプロイ）が完了している必要があります。</p>
+<p>:warning: <strong>この手順は受講者用です。</strong> 先に docs/instructor-setup.md — 講師側の事前準備（mock エンドポイントと共有 Container Apps 環境のデプロイ）が完了している必要があります。</p>
 </blockquote>
 <p>事前準備 → 構築 → 連携 → マルチクラウド → 可視化 → 後片付け の順で進めます。</p>
 <table>
@@ -251,49 +251,49 @@
 </tr>
 </thead>
 <tbody><tr>
-<td><a href="./docs/labs/lab0.md">Lab 0</a></td>
+<td><a href="#lab0" class="nav-link" data-page="lab0">Lab 0</a></td>
 <td>環境準備</td>
 <td>Azure CLI / Portal アクセス / 命名規約 (<code>&lt;initials&gt;</code>) / リソースグループ整備</td>
 <td>約 10 分</td>
 </tr>
 <tr>
-<td><a href="./docs/labs/lab1.md">Lab 1</a></td>
+<td><a href="#lab1" class="nav-link" data-page="lab1">Lab 1</a></td>
 <td>APIM 基盤と Application Insights 構築</td>
 <td>Log Analytics → App Insights → APIM (Classic Developer) → ロガー紐付け</td>
 <td>約 45 分（うち APIM プロビジョニング待ち 30–45 分は Lab 2 と並行）</td>
 </tr>
 <tr>
-<td><a href="./docs/labs/lab2.md">Lab 2</a></td>
+<td><a href="#lab2" class="nav-link" data-page="lab2">Lab 2</a></td>
 <td>LLM プロバイダの準備（Foundry + mock）</td>
 <td>Microsoft Foundry リソース作成 → <code>gpt-4o-mini</code> デプロイ → 講師配布 mock エンドポイント疎通</td>
 <td>約 25 分（Lab 1 と並行可）</td>
 </tr>
 <tr>
-<td><a href="./docs/labs/lab3.md">Lab 3</a></td>
+<td><a href="#lab3" class="nav-link" data-page="lab3">Lab 3</a></td>
 <td>Microsoft Foundry と APIM AI Gateway の連携</td>
 <td>Foundry portal ↔ APIM portal 双方向統合（プレビュー）で <code>openai-api</code> を登録、AI Gateway ポリシーを適用</td>
 <td>約 40 分</td>
 </tr>
 <tr>
-<td><a href="./docs/labs/lab4.md">Lab 4</a></td>
+<td><a href="#lab4" class="nav-link" data-page="lab4">Lab 4</a></td>
 <td>他ベンダー LLM（AWS Bedrock の Claude）の登録</td>
 <td>APIM の <strong>Create an AI API → Language Model API</strong> ウィザードで <code>bedrock-api</code> を Passthrough 登録、SigV4 ポリシー追加（mock は署名検証しない）</td>
 <td>約 45 分</td>
 </tr>
 <tr>
-<td><a href="./docs/labs/lab5.md">Lab 5</a></td>
+<td><a href="#lab5" class="nav-link" data-page="lab5">Lab 5</a></td>
 <td>外部環境（AWS 相当）で APIM Self-hosted Gateway を展開</td>
 <td>APIM で Gateway リソース定義 → token 生成 → Container Apps (<code>ca-shgw-&lt;initials&gt;</code> / eastus) にデプロイ → 同じ API を AWS 相当データプレーン経由で叩く</td>
 <td>約 55 分</td>
 </tr>
 <tr>
-<td><a href="./docs/labs/lab6.md">Lab 6</a></td>
+<td><a href="#lab6" class="nav-link" data-page="lab6">Lab 6</a></td>
 <td>OpenTelemetry によるモニタリング / トレーシング</td>
 <td>APIM の W3C 設定確認 → Foundry を App Insights に接続 → 外部 SHGW のテレメトリと通信断時の挙動を整理</td>
 <td>約 45 分</td>
 </tr>
 <tr>
-<td><a href="./docs/labs/lab7.md">Lab 7</a></td>
+<td><a href="#lab7" class="nav-link" data-page="lab7">Lab 7</a></td>
 <td>クリーンアップ</td>
 <td>Container App 停止／Gateway リソース削除／RG 一括削除で課金停止</td>
 <td>約 5 分</td>
@@ -302,10 +302,10 @@
 <p>ハンズオン所要時間 <strong>約 4 時間</strong>（Lab 1 の APIM プロビジョニング待ちと Lab 2 を並行実施する前提）。実作業の単純合計は約 4 時間 30 分。</p>
 <h2 id="補足資料">補足資料</h2>
 <ul>
-<li><a href="./docs/README.md">docs/README.md</a> — ハンズオン全体の詳細概要・コスト方針・想定読者</li>
-<li><a href="./docs/Otel_Info.md">docs/Otel_Info.md</a> — E2E 分散トレース成立条件のリファレンス（Lab 6 を読み解くための前提理論。<code>traceparent</code> 受け渡し原則 / Azure・M365・AWS・GCP・SaaS 別の自動計装可否マトリクス）</li>
-<li><a href="./docs/instructor-setup.md">docs/instructor-setup.md</a> — 講師側の事前準備（mock エンドポイントと共有 Container Apps 環境のデプロイ）</li>
-<li><a href="./spec.md">spec.md</a> — ハンズオンキット仕様</li>
+<li><a href="#readme" class="nav-link" data-page="readme">docs/README.md</a> — ハンズオン全体の詳細概要・コスト方針・想定読者</li>
+<li>docs/Otel_Info.md — E2E 分散トレース成立条件のリファレンス（Lab 6 を読み解くための前提理論。<code>traceparent</code> 受け渡し原則 / Azure・M365・AWS・GCP・SaaS 別の自動計装可否マトリクス）</li>
+<li>docs/instructor-setup.md — 講師側の事前準備（mock エンドポイントと共有 Container Apps 環境のデプロイ）</li>
+<li>spec.md — ハンズオンキット仕様</li>
 </ul>
 <h2 id="想定読者">想定読者</h2>
 <ul>
@@ -351,9 +351,9 @@
 <p>:information_source: 本ハンズオンは <strong>AWS アカウントを使用しません</strong>。「AWS 上で APIM SHGW を動かすパターン」は Azure Container Apps で再現します。コンテナイメージ・設定方法・トークン認可は AWS で動かす場合と完全に同一のため、本番でホスティング先を AWS Fargate / EKS / EC2 に差し替えるだけで動きます。</p>
 </blockquote>
 <h2 id="ライセンス">ライセンス</h2>
-<p>このリポジトリは <a href="./LICENSE">MIT License</a> で公開されています。</p>
+<p>このリポジトリは MIT License で公開されています。</p>
 <hr>
-<p>開始は <a href="./docs/labs/lab0.md">Lab 0 — 環境準備</a> から。</p>
+<p>開始は <a href="#lab0" class="nav-link" data-page="lab0">Lab 0 — 環境準備</a> から。</p>
 
   </section>
   <section id="page-lab0" class="page-section" style="display:none">
@@ -456,8 +456,8 @@
 </thead>
 <tbody><tr>
 <td>APIM</td>
-<td><code>apim-aigw-&lt;id&gt;</code></td>
-<td><code>apim-aigw-______</code></td>
+<td><code>apim-aigw-handson-&lt;id&gt;</code></td>
+<td><code>apim-aigw-handson-______</code></td>
 </tr>
 <tr>
 <td>App Insights</td>
@@ -492,7 +492,7 @@
 <li><input disabled="" type="checkbox"> 講師 RG <code>rg-apim-instructor</code> が Reader で見えることを確認</li>
 <li><input disabled="" type="checkbox"> 参加者 ID（<code>&lt;id&gt;</code>）を確認し、メモした</li>
 </ul>
-<p>完了したら <a href="./lab1.md">Lab 1 — APIM 基盤と Application Insights 構築</a> へ進みます。</p>
+<p>完了したら <a href="#lab1" class="nav-link" data-page="lab1">Lab 1 — APIM 基盤と Application Insights 構築</a> へ進みます。</p>
 
   </section>
   <section id="page-lab1" class="page-section" style="display:none">
@@ -500,10 +500,10 @@
 <h2 id="ゴール">ゴール</h2>
 <p>AI Gateway のハブとなる <strong>Azure API Management（Developer SKU）</strong> と、OTel / トレースの受け皿となる <strong>Application Insights</strong>（Workspace ベース）を作成し、両者を接続する。</p>
 <h2 id="所要時間">所要時間</h2>
-<p>約 45 分（うち APIM プロビジョニングの待ち時間が 30–45 分。待機中に <a href="./lab2.md">Lab 2</a> の Foundry リソース作成 + gpt-4o-mini デプロイ + mock 疎通確認（約 25 分）を並行実施してください。実際の画面操作は約 15 分）</p>
+<p>約 45 分（うち APIM プロビジョニングの待ち時間が 30–45 分。待機中に <a href="#lab2" class="nav-link" data-page="lab2">Lab 2</a> の Foundry リソース作成 + gpt-4o-mini デプロイ + mock 疎通確認（約 25 分）を並行実施してください。実際の画面操作は約 15 分）</p>
 <h2 id="事前条件">事前条件</h2>
 <ul>
-<li><a href="./lab0.md">Lab 0</a> 完了</li>
+<li><a href="#lab0" class="nav-link" data-page="lab0">Lab 0</a> 完了</li>
 <li>リソースグループ <code>rg-aigw-handson-&lt;id&gt;</code> がある</li>
 <li>命名規約の <code>&lt;id&gt;</code> を決定済み</li>
 </ul>
@@ -575,7 +575,7 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 <li><strong>基本</strong> タブ:<ul>
 <li>リソース グループ: <code>rg-aigw-handson-&lt;id&gt;</code></li>
 <li>リージョン: <code>Japan East</code></li>
-<li>リソース名: <code>apim-aigw-&lt;id&gt;</code></li>
+<li>リソース名: <code>apim-aigw-handson-&lt;id&gt;</code></li>
 <li>組織名: 任意（例: <code>aigw-handson</code>）</li>
 <li>管理者メール: 自分のアドレス</li>
 <li>価格レベル: <strong>Developer (no SLA)</strong></li>
@@ -607,7 +607,7 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 <li><strong>確認とインストール</strong> → <strong>作成</strong></li>
 </ol>
 <blockquote>
-<p>:hourglass: プロビジョニングは 30–45 分かかります。<strong>この間に <a href="./lab2.md">Lab 2</a> の Foundry リソース作成 + gpt-4o-mini デプロイ + mock 疎通確認（約 25 分）を済ませておいてください</strong>。</p>
+<p>:hourglass: プロビジョニングは 30–45 分かかります。<strong>この間に <a href="#lab2" class="nav-link" data-page="lab2">Lab 2</a> の Foundry リソース作成 + gpt-4o-mini デプロイ + mock 疎通確認（約 25 分）を済ませておいてください</strong>。</p>
 </blockquote>
 <h2 id="1-4-apim-の-application-insights-ロガー設定確認">1-4. APIM の Application Insights ロガー設定確認</h2>
 <p>APIM は API を通過するすべてのリクエスト・レスポンスのテレメトリ（リクエスト数・レイテンシ・エラー率など）を Application Insights へ送信できます。この送信を担うのが <strong>Application Insights ロガー</strong>です。1-3 の作成ウィザードで Application Insights を選択した場合、ロガーは自動作成されますが、<strong>サンプリング率や詳細レベルが意図通りになっているか</strong> をここで確認します。サンプリングを 100 % にしないとリクエストがログから欠落し、Lab 6 のトレース確認で結果が見えないことがあります。</p>
@@ -642,12 +642,12 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 </thead>
 <tbody><tr>
 <td>ゲートウェイ URL</td>
-<td><code>https://apim-aigw-&lt;id&gt;.azure-api.net</code></td>
+<td><code>https://apim-aigw-handson-&lt;id&gt;.azure-api.net</code></td>
 <td>Lab 3 で curl 実行先</td>
 </tr>
 <tr>
 <td>構成 URL</td>
-<td><code>apim-aigw-&lt;id&gt;.configuration.azure-api.net</code></td>
+<td><code>apim-aigw-handson-&lt;id&gt;.configuration.azure-api.net</code></td>
 <td>Lab 5 SHGW で使用</td>
 </tr>
 </tbody></table>
@@ -658,7 +658,7 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 <li><input disabled="" type="checkbox"> APIM（Developer SKU）作成完了、ゲートウェイ URL を控えた</li>
 <li><input disabled="" type="checkbox"> APIM ↔ Application Insights が紐付け済み</li>
 </ul>
-<p>完了したら <a href="./lab2.md">Lab 2 — mock エンドポイントの確認</a> へ。</p>
+<p>完了したら <a href="#lab2" class="nav-link" data-page="lab2">Lab 2 — mock エンドポイントの確認</a> へ。</p>
 
   </section>
   <section id="page-lab2" class="page-section" style="display:none">
@@ -691,7 +691,7 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 <p>約 25 分（Foundry 作成 + モデル deploy 約 20 分 / mock 疎通 5 分。Lab 1 の APIM プロビジョニング待ちと並行実施可）</p>
 <h2 id="事前条件">事前条件</h2>
 <ul>
-<li><a href="./lab0.md">Lab 0</a> 完了</li>
+<li><a href="#lab0" class="nav-link" data-page="lab0">Lab 0</a> 完了</li>
 <li>講師から <strong>mock エンドポイントの Base URL</strong> を受領済み<ul>
 <li>配布形式例: <code>https://&lt;INSTRUCTOR_CA_NAME&gt;.&lt;region&gt;.azurecontainerapps.io</code></li>
 <li>以降本資料では <strong><code>&lt;mock_BASE_URL&gt;</code></strong> と表記します</li>
@@ -728,7 +728,7 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 </tr>
 <tr>
 <td>名前</td>
-<td><code>aif-aigw-&lt;id&gt;</code>（テナント内で一意）</td>
+<td><code>aif-aigw-handson-&lt;id&gt;</code>（テナント内で一意）</td>
 </tr>
 <tr>
 <td>リージョン</td>
@@ -777,9 +777,9 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 <h2 id="2-2-gpt-4o-mini-を-deploy">2-2. gpt-4o-mini を Deploy</h2>
 <h3 id="foundry-portal-に移動">Foundry portal に移動</h3>
 <ol>
-<li>デプロイ完了後、<code>aif-aigw-&lt;id&gt;</code> リソースの <strong>概要</strong> 画面を開く<ul>
+<li>デプロイ完了後、<code>aif-aigw-handson-&lt;id&gt;</code> リソースの <strong>概要</strong> 画面を開く<ul>
 <li>上部 <code>Foundry ポータルに移動</code> リンク、または画面中央の <strong>Foundry ポータルに移動</strong> ボタンをクリック</li>
-<li>ブラウザの新しいタブで <a href="https://ai.azure.com">https://ai.azure.com</a> が開き、§2-1 で作成した <strong><code>aif-aigw-&lt;id&gt;</code> / <code>proj-default-&lt;id&gt;</code></strong> が選択された状態でランディングします</li>
+<li>ブラウザの新しいタブで <a href="https://ai.azure.com">https://ai.azure.com</a> が開き、§2-1 で作成した <strong><code>aif-aigw-handson-&lt;id&gt;</code> / <code>proj-default-&lt;id&gt;</code></strong> が選択された状態でランディングします</li>
 <li>初回サインインを求められた場合は Azure Portal と同じアカウントでサインイン</li>
 </ul>
 </li>
@@ -849,6 +849,41 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 <li><strong>モデル</strong> ドロップダウンが <code>gpt-4o-mini</code> になっていることを確認</li>
 <li>入力欄に <code>こんにちは</code> と入れて送信 → 応答が返れば OK</li>
 </ol>
+<blockquote>
+<p>:warning: <strong>「チャット プレビューを使用するためのアクセス許可がありません」と出た場合</strong><br>
+新規 Foundry リソースは既定でローカル認証（API キー）が制限されており、かつログイン中のユーザーには推論データプレーン用ロールが付いていないため発生します。<strong><code>Cognitive Services User</code></strong> ロールを自分自身に割り当てる必要があります（<strong><code>Cognitive Services OpenAI User</code></strong> ではなく <strong><code>Cognitive Services User</code></strong> が必要。Owner / Contributor は推論権限を付与しません）。詳細手順は次の §2-2-a を参照。</p>
+</blockquote>
+<h3 id="2-2-a-playground-でアクセス権エラーが出た場合の対処-entra-id-認証を有効化">2-2-a. Playground でアクセス権エラーが出た場合の対処（Entra ID 認証を有効化）</h3>
+<p><code>aif-aigw-handson-&lt;id&gt;</code> リソースに対し、受講者ユーザー アカウントへ <strong><code>Cognitive Services User</code></strong> ロールを割り当てます。</p>
+<blockquote>
+<p>:warning: <strong>本ハンズオンでは受講者にロール割り当て権限（<code>Microsoft.Authorization/roleAssignments/write</code>）が付与されていません。</strong> 受講者用アカウントは自分の RG (<code>rg-aigw-handson-&lt;id&gt;</code>) に対する <code>Contributor</code> のみが付いており、IAM の「ロールの割り当ての追加」を実行しても権限不足で失敗します。<strong>この作業は講師が代行します。</strong> 受講者は以下を講師に伝えてください:</p>
+<ul>
+<li>受講者 ID（例: <code>user01</code>）</li>
+<li>Foundry リソース名: <code>aif-aigw-handson-&lt;id&gt;</code></li>
+</ul>
+<p>講師が割り当てを完了したら、約 5 分後に Foundry portal の Chat playground タブを再読み込みすると応答が返るようになります。</p>
+</blockquote>
+<h4 id="講師向け-portal-手順-参考">講師向け Portal 手順（参考）</h4>
+<ol>
+<li>Azure Portal で <code>aif-aigw-handson-&lt;id&gt;</code> リソースを開く</li>
+<li>左メニュー <strong>アクセス制御 (IAM)</strong> → 上部 <strong>+ 追加</strong> → <strong>ロールの割り当ての追加</strong></li>
+<li><strong>役割</strong> タブ: 検索ボックスに <code>Cognitive Services User</code> → 一覧から <strong>Cognitive Services User</strong> を選択 → <strong>次へ</strong><ul>
+<li>:warning: <code>Cognitive Services OpenAI User</code> ではなく <strong><code>Cognitive Services User</code></strong> を選びます（新 Foundry では前者は OpenAI モデル限定）</li>
+</ul>
+</li>
+<li><strong>メンバー</strong> タブ:<ul>
+<li><strong>アクセスの割り当て先</strong> = <strong>ユーザー、グループ、またはサービス プリンシパル</strong></li>
+<li><strong>+ メンバーを選択</strong> → 受講者の UPN を検索して選択 → <strong>選択</strong></li>
+<li><strong>次へ</strong></li>
+</ul>
+</li>
+<li><strong>レビューと割り当て</strong> タブ → <strong>割り当て</strong></li>
+<li><strong>約 5 分待機</strong>（ロール反映待ち）後、受講者にブラウザ再読み込みを依頼</li>
+</ol>
+<blockquote>
+<p>:information_source: ここで割り当てた <strong><code>Cognitive Services User</code></strong> は <strong>受講者自身が Foundry を直接叩く</strong> ために必要なロールです。Lab 3 では <strong>APIM のシステム割り当てマネージド ID</strong> に対して同じく <strong><code>Cognitive Services User</code></strong> を割り当て、APIM 経由で Foundry を呼び出せるようにします（マネージド ID 用の割り当て手順は Lab 3 §3-2 で実施。こちらは受講者自身では実行できないため、同じく講師が代行します）。</p>
+</blockquote>
+<p>参考: <a href="https://learn.microsoft.com/azure/foundry/foundry-models/how-to/configure-entra-id#troubleshooting">Microsoft Foundry – Configure keyless auth (Troubleshooting)</a></p>
 <h2 id="2-3-エンドポイント情報を控える">2-3. エンドポイント情報を控える</h2>
 <p>Lab 3 で APIM のウィザードに入力するため、以下を控えてください。</p>
 <h3 id="foundry-portal-のホーム画面から取得-最短ルート">Foundry portal のホーム画面から取得（最短ルート）</h3>
@@ -868,12 +903,12 @@ Consumption / StandardV2 / Basic v2 を選ぶと Lab 4 で <code>MethodNotAllowe
 </tr>
 <tr>
 <td><strong>プロジェクト エンドポイント</strong></td>
-<td><code>https://aif-aigw-&lt;id&gt;.services.ai.azure.com/api/projects/proj-default-&lt;id&gt;</code></td>
+<td><code>https://aif-aigw-handson-&lt;id&gt;.services.ai.azure.com/api/projects/proj-default-&lt;id&gt;</code></td>
 <td>Azure AI Foundry SDK / プロジェクト スコープ</td>
 </tr>
 <tr>
 <td><strong>Azure OpenAI エンドポイント</strong></td>
-<td><code>https://aif-aigw-&lt;id&gt;.openai.azure.com/</code></td>
+<td><code>https://aif-aigw-handson-&lt;id&gt;.openai.azure.com/</code></td>
 <td>Azure OpenAI SDK / <code>openai</code> Python SDK (<code>AzureOpenAI</code>) / <strong>Lab 3 の APIM ウィザードはこちらの URL を内部で利用</strong></td>
 </tr>
 </tbody></table>
@@ -975,16 +1010,16 @@ Remove-Item $tmp -Force
 </blockquote>
 <h2 id="チェックリスト">チェックリスト</h2>
 <ul>
-<li><input disabled="" type="checkbox"> Microsoft Foundry リソース <code>aif-aigw-&lt;id&gt;</code> を作成（マネージド ID 有効）</li>
+<li><input disabled="" type="checkbox"> Microsoft Foundry リソース <code>aif-aigw-handson-&lt;id&gt;</code> を作成（マネージド ID 有効）</li>
 <li><input disabled="" type="checkbox"> プロジェクト <code>proj-default-&lt;id&gt;</code> を作成</li>
 <li><input disabled="" type="checkbox"> gpt-4o-mini を Deploy（Deployment type: Global Standard）</li>
 <li><input disabled="" type="checkbox"> Foundry の Chat playground で <code>gpt-4o-mini</code> の応答を確認</li>
-<li><input disabled="" type="checkbox"> Foundry のエンドポイント / Key を控えた（または Foundry リソース名 <code>aif-aigw-&lt;id&gt;</code> をメモ）</li>
+<li><input disabled="" type="checkbox"> Foundry のエンドポイント / Key を控えた（または Foundry リソース名 <code>aif-aigw-handson-&lt;id&gt;</code> をメモ）</li>
 <li><input disabled="" type="checkbox"> 講師から <code>&lt;mock_BASE_URL&gt;</code> を受領した</li>
 <li><input disabled="" type="checkbox"> Bedrock Converse 形式 mock で 200 OK と <code>output.message</code> 形式の JSON を確認</li>
 <li><input disabled="" type="checkbox"> Bedrock InvokeModel 形式 mock で 200 OK と Anthropic ネイティブ JSON を確認</li>
 </ul>
-<p>完了したら（Lab 1 の APIM プロビジョニングも完了している前提で） <a href="./lab3.md">Lab 3 — APIM AI Gateway として LLM を登録・管理</a> へ。</p>
+<p>完了したら（Lab 1 の APIM プロビジョニングも完了している前提で） <a href="#lab3" class="nav-link" data-page="lab3">Lab 3 — APIM AI Gateway として LLM を登録・管理</a> へ。</p>
 
   </section>
   <section id="page-lab3" class="page-section" style="display:none">
@@ -995,8 +1030,8 @@ Remove-Item $tmp -Force
 <p>約 40 分</p>
 <h2 id="事前条件">事前条件</h2>
 <ul>
-<li><a href="./lab1.md">Lab 1</a> 完了 — APIM プロビジョニング完了</li>
-<li><a href="./lab2.md">Lab 2</a> 完了 — Foundry の gpt-4o-mini をデプロイ済み</li>
+<li><a href="#lab1" class="nav-link" data-page="lab1">Lab 1</a> 完了 — APIM プロビジョニング完了</li>
+<li><a href="#lab2" class="nav-link" data-page="lab2">Lab 2</a> 完了 — Foundry の gpt-4o-mini をデプロイ済み</li>
 <li>APIM の <strong>システム割り当てマネージド ID</strong> が有効（Lab 1 既定で ON。未設定の場合は <code>APIM → ID → システム割り当て → オン → 保存</code>）</li>
 </ul>
 <hr>
@@ -1029,22 +1064,64 @@ Remove-Item $tmp -Force
 <p>:information_source: <strong>試したい場合の進め方</strong>: 公式ドキュメント手順に沿って Foundry portal <code>操作 → 管理者 → AI Gateway</code> タブで AI Gateway を新規作成（Basic v2 / Free レベル枠内）し、<code>proj-default-&lt;id&gt;</code> を <strong>プロジェクトをゲートウェイに追加</strong> で有効化してください。本ラボの 3-1B 以降には影響しません。</p>
 </blockquote>
 <h3 id="3-1b-apim-portal-で-foundry-のモデルを-api-リソース-として公開">3-1B. APIM Portal で Foundry のモデルを API リソース として公開</h3>
+<blockquote>
+<p>:rotating_light: <strong>【受講者必読】このウィザードは作成時に <strong>必ず</strong> ロール割り当てを新規書き込みします（既存割り当てはチェックしません）。本ハンズオンでは受講者に <code>Microsoft.Authorization/roleAssignments/write</code> 権限が無いため、そのまま実行すると <strong>「API を作成できませんでした」エラーで API 作成自体がロールバックされます</strong>。</strong></p>
+<p><strong>ウィザードを起動する前に</strong>、講師が以下 2 つを完了しているか確認してください（未完了なら依頼）:</p>
+<ol>
+<li><strong>APIM <code>apim-aigw-handson-&lt;id&gt;</code> の System-assigned Managed Identity</strong> に対し、Foundry リソース <code>aif-aigw-handson-&lt;id&gt;</code> スコープで <strong><code>Cognitive Services User</code></strong> ロール付与（実行時に APIM が Foundry を呼ぶために必要）</li>
+<li><strong>受講者 UPN 自身</strong> に対し、同じ <code>aif-aigw-handson-&lt;id&gt;</code> スコープで <strong><code>User Access Administrator</code></strong> ロール付与（ウィザードが受講者の権限でロール割り当てを書くために必要。<strong>スコープはこの Foundry リソースのみ</strong>に限定し、Lab 3 完了後にこの割り当ては削除してかまいません）</li>
+</ol>
+<p>2 つ両方揃った状態で、受講者はウィザードを実行できます。ウィザードは「另リソースを定義する」警告を出さずに成功し、APIM MI に <code>Cognitive Services OpenAI User</code> を追加します（既存の <code>Cognitive Services User</code> と並存、両方付いていて問題なし）。</p>
+<p>エラーになった場合 → 上記 2. が未付与ということ。<strong>API は何も作られていません</strong>。講師に依頼し、約 5 分待機してからウィザードをもう一度最初から実行してください（APIs 一覧に中途半端な <code>openai-api</code> が残っていれば削除）。</p>
+<details>
+<summary>講師向け: 受講者番号をループして 1 ＋ 2 を一括付与する PowerShell スニペット</summary>
+<pre><code class="language-powershell"># 例: user01 〜 user10 に対して
+#   - APIM MI へ Cognitive Services Userを Foundry スコープで付与
+#   - 受講者 UPN へ User Access Administratorを Foundry スコープで付与（ウィザード完走のため）
+$sub    = (az account show --query id -o tsv)
+$domain = 'M365CPI65139919.onmicrosoft.com'  # テナントドメインに置換
+1..10 | ForEach-Object {
+  $id      = 'user{0:D2}' -f $_
+  $rg      = "rg-aigw-handson-$id"
+  $apim    = "apim-aigw-handson-$id"
+  $foundry = "aif-aigw-handson-$id"
+  $upn     = "$id@$domain"
+  $scope   = "/subscriptions/$sub/resourceGroups/$rg/providers/Microsoft.CognitiveServices/accounts/$foundry"
+
+  # 1. APIM MI へ Cognitive Services User
+  $miOid = az apim show -g $rg -n $apim --query identity.principalId -o tsv
+  if ($miOid) {
+    az role assignment create --assignee-object-id $miOid --assignee-principal-type ServicePrincipal `
+      --role 'Cognitive Services User' --scope $scope | Out-Null
+  } else {
+    Write-Warning "$id: APIM MI 未取得 (System-assigned 未有効か)"
+  }
+
+  # 2. 受講者 UPN へ User Access Administrator (Foundry スコープのみ)
+  az role assignment create --assignee $upn `
+    --role 'User Access Administrator' --scope $scope | Out-Null
+
+  Write-Host "$id done"
+}
+</code></pre>
+</details>
+</blockquote>
 <p>専用ウィザードを使うことで:</p>
 <ul>
 <li>Foundry リソース内のデプロイメント一覧が自動取得される</li>
 <li>Backend と <code>set-backend-service</code> ポリシーが自動生成される</li>
-<li><strong>APIM のマネージド ID</strong> に <code>Cognitive Services OpenAI User</code> ロールが Foundry リソースで自動付与される</li>
+<li><strong>APIM のマネージド ID</strong> に <code>Cognitive Services OpenAI User</code> ロールが Foundry リソースで自動付与される（事前付与済みの <code>Cognitive Services User</code> と並存）</li>
 <li>認証は MI で完結（API キーを APIM 側で保持しない）</li>
 </ul>
 <h4 id="portal-手順">Portal 手順</h4>
 <ol>
-<li><code>APIM (apim-aigw-&lt;id&gt;) → 左メニュー APIs → + API の追加</code></li>
+<li><code>APIM (apim-aigw-handson-&lt;id&gt;) → 左メニュー APIs → + API の追加</code></li>
 <li><strong>「Create an AI API」</strong> カテゴリ内の <strong>Microsoft Foundry</strong> カードを選択</li>
 </ol>
 <h4 id="select-ai-service-タブ">Select AI Service タブ</h4>
 <ul>
 <li><strong>サブスクリプション</strong>: Foundry リソースがあるサブスクリプション</li>
-<li><strong>Microsoft Foundry</strong>: <code>aif-aigw-&lt;id&gt;</code> を選択<ul>
+<li><strong>Microsoft Foundry</strong>: <code>aif-aigw-handson-&lt;id&gt;</code> を選択<ul>
 <li>行の右側の <strong>deployments</strong> リンクで <code>gpt-4o-mini</code> がデプロイされていることを確認</li>
 </ul>
 </li>
@@ -1118,12 +1195,13 @@ Remove-Item $tmp -Force
 <p>作成完了で以下が自動構成されます:</p>
 <ul>
 <li>API <code>openai-api</code> と、Azure OpenAI のオペレーション群（<code>chat/completions</code> / <code>embeddings</code> / <code>images/generations</code> など）</li>
-<li>Backend <code>openai-api-ai-endpoint</code>（URL = <code>https://&lt;aif-aigw-&lt;id&gt;&gt;.&lt;region&gt;.cognitiveservices.azure.com/openai</code>、認証 = <code>Azure resource (Managed identity)</code>）</li>
+<li>Backend <code>openai-api-ai-endpoint</code>（URL = <code>https://&lt;aif-aigw-handson-&lt;id&gt;&gt;.&lt;region&gt;.cognitiveservices.azure.com/openai</code>、認証 = <code>Azure resource (Managed identity)</code>）</li>
 <li>API スコープ inbound policy に <code>set-backend-service</code>（<code>backend-id=&quot;openai-api-ai-endpoint&quot;</code>）と <code>llm-token-limit</code> が挿入される（実ポリシーは 3-2 で確認）</li>
-<li>Foundry リソースに <code>Cognitive Services OpenAI User</code> ロールが APIM の MI へ付与される</li>
+<li>Foundry リソースに <code>Cognitive Services OpenAI User</code> ロールが APIM の MI へ追加付与される（事前付与済みの <code>Cognitive Services User</code> と並存して両方付いている状態になります）</li>
 </ul>
 <blockquote>
-<p>:warning: Foundry リソースへのロール付与権限（<strong>所有者</strong> or <strong>ユーザー アクセス管理者</strong>）が必要です。権限不足のときは Wizard が警告するので、講師に依頼するか手動で <code>APIM の System-assigned MI</code> に <code>Cognitive Services OpenAI User</code> を <code>aif-aigw-&lt;id&gt;</code> リソースで割り当ててください。</p>
+<p>:information_source: もし「<strong>API を作成できませんでした</strong>」エラーが出た場合 = §3-1B 冒頭の事前付与 2 番（受講者 UPN への <code>User Access Administrator</code>）が未実施です。<strong>API リソースは作成されていません</strong>。講師に付与を依頼し、約 5 分待機してからウィザードをもう一度最初から実行してください。APIs 一覧に中途半端な <code>openai-api</code> が残っている場合は削除してからリトライします。</p>
+</blockquote>
 </blockquote>
 <h2 id="3-2-自動生成された成果物の確認">3-2. 自動生成された成果物の確認</h2>
 <p>APIs 一覧に <strong><code>openai-api</code></strong>、Backends → <strong>バックエンド</strong> タブに <strong><code>openai-api-ai-endpoint</code></strong> が並びます。</p>
@@ -1192,7 +1270,7 @@ Remove-Item $tmp -Force
 </ul>
 <p><strong>送信</strong>。200 が返り、<code>output[0].content[0].text</code> に本物の gpt-4o-mini の応答が含まれていれば成功です。</p>
 <h3 id="powershell-curl-exe-から">PowerShell (curl.exe) から</h3>
-<pre><code class="language-pwsh">$APIM = &quot;https://apim-aigw-&lt;id&gt;.azure-api.net&quot;   # APIM ホスト + openai-api の Base path
+<pre><code class="language-pwsh">$APIM = &quot;https://apim-aigw-handson-&lt;id&gt;.azure-api.net&quot;   # APIM ホスト + openai-api の Base path
 $KEY  = &quot;&lt;3-3 で取得した主キー&gt;&quot;
 $tmp  = New-TemporaryFile
 
@@ -1239,11 +1317,11 @@ Remove-Item $tmp -Force
 <li><input disabled="" type="checkbox"> APIM の <strong>システム割り当てマネージド ID</strong> が有効</li>
 <li><input disabled="" type="checkbox"> （任意・3-1A 参考実施時のみ）Foundry portal の <strong>管理者 → AI Gateway</strong> タブで Basic v2 APIM を新規作成し、<code>proj-default-&lt;id&gt;</code> をゲートウェイに追加した</li>
 <li><input disabled="" type="checkbox"> <strong>Microsoft Foundry</strong> ウィザードで <code>openai-api</code> を作成し、Foundry の gpt-4o-mini と接続した</li>
-<li><input disabled="" type="checkbox"> APIM の MI に Foundry リソースの <code>Cognitive Services OpenAI User</code> ロールが付与されている</li>
+<li><input disabled="" type="checkbox"> APIM の MI に Foundry リソースの <code>Cognitive Services User</code> ロールが付与されている（講師が代行付与）</li>
 <li><input disabled="" type="checkbox"> <code>openai-api</code> の Inbound ポリシーに <code>set-backend-service</code> と <code>llm-token-limit</code> が自動生成されている</li>
 <li><input disabled="" type="checkbox"> サブスクリプション キーで <code>openai-api</code> が 200 を返す</li>
 </ul>
-<p>完了したら <a href="./lab4.md">Lab 4 — 他ベンダー LLM（Claude / Gemini）の APIM への登録</a> へ。</p>
+<p>完了したら <a href="#lab4" class="nav-link" data-page="lab4">Lab 4 — 他ベンダー LLM（Claude / Gemini）の APIM への登録</a> へ。</p>
 
   </section>
   <section id="page-lab4" class="page-section" style="display:none">
@@ -1302,7 +1380,7 @@ Remove-Item $tmp -Force
 <p>約 45 分</p>
 <h2 id="事前条件">事前条件</h2>
 <ul>
-<li><a href="./lab3.md">Lab 3</a> 完了 — <code>openai-api</code>（Foundry の gpt-4o-mini）が APIM に登録済み</li>
+<li><a href="#lab3" class="nav-link" data-page="lab3">Lab 3</a> 完了 — <code>openai-api</code>（Foundry の gpt-4o-mini）が APIM に登録済み</li>
 <li>Lab 2 で確認した <code>&lt;mock_BASE_URL&gt;</code> を環境変数 / メモに保持</li>
 </ul>
 <hr>
@@ -1310,7 +1388,7 @@ Remove-Item $tmp -Force
 <p>AWS Bedrock は <strong>OpenAI 互換ではない独自スキーマ</strong>（Converse / InvokeModel）なので、<strong>Passthrough</strong> で登録します。</p>
 <h3 id="portal-手順">Portal 手順</h3>
 <ol>
-<li><code>APIM (apim-aigw-&lt;id&gt;) → 左メニュー APIs → + API の追加</code></li>
+<li><code>APIM (apim-aigw-handson-&lt;id&gt;) → 左メニュー APIs → + API の追加</code></li>
 <li><strong>「Create an AI API」</strong> セクション内の <strong>Language Model API</strong> カードを選択</li>
 </ol>
 <p><strong>Configure API</strong> タブ:</p>
@@ -1592,7 +1670,7 @@ Remove-Item $tmp -Force
 &lt;/policies&gt;
 </code></pre>
 </details><blockquote>
-<p>:information_source: 上記 XML は <code>apim-aigw-userxx</code>（Developer SKU / japaneast）で「200 OK + <code>Echo: hello via Bedrock through APIM with SigV4 no Host header</code>」を返すことを実機検証済みです。APIM のポリシー仕様が今後変わった場合は MS Learn の最新版を優先してください（出典 URL は同じ）。</p>
+<p>:information_source: 上記 XML は <code>apim-aigw-handson-userxx</code>（Developer SKU / japaneast）で「200 OK + <code>Echo: hello via Bedrock through APIM with SigV4 no Host header</code>」を返すことを実機検証済みです。APIM のポリシー仕様が今後変わった場合は MS Learn の最新版を優先してください（出典 URL は同じ）。</p>
 </blockquote>
 <h2 id="4-3-backend-一覧を確認">4-3. Backend 一覧を確認</h2>
 <p>APIs 一覧に Lab 3 の <code>openai-api</code> と合わせて <strong>2 API</strong>、Backends → <strong>バックエンド</strong> タブに <strong>2 Backend</strong> が並びます。</p>
@@ -1673,7 +1751,7 @@ Remove-Item $tmp -Force
 </blockquote>
 <h3 id="2-powershell-curl-exe-から">(2) PowerShell (curl.exe) から</h3>
 <p>Lab 3 で作成したサブスクリプション キーをそのまま流用します。</p>
-<pre><code class="language-pwsh">$APIM = &quot;https://apim-aigw-&lt;id&gt;.azure-api.net&quot;
+<pre><code class="language-pwsh">$APIM = &quot;https://apim-aigw-handson-&lt;id&gt;.azure-api.net&quot;
 $KEY  = &quot;&lt;Lab 3 のサブスクリプション主キー&gt;&quot;
 $MODEL_ID = &quot;us.anthropic.claude-3-5-haiku-20241022-v1:0&quot;
 $tmp  = New-TemporaryFile
@@ -1719,7 +1797,7 @@ Remove-Item $tmp -Force
 </ul>
 <h4 id="実行手順">実行手順</h4>
 <pre><code class="language-pwsh">cd .\bedrock-APIM-direct
-$env:APIM_BEDROCK_URL      = &quot;https://apim-aigw-&lt;id&gt;.azure-api.net/bedrock&quot;
+$env:APIM_BEDROCK_URL      = &quot;https://apim-aigw-handson-&lt;id&gt;.azure-api.net/bedrock&quot;
 $env:APIM_SUBSCRIPTION_KEY = &quot;&lt;Lab 3 のサブスクリプション主キー&gt;&quot;
 dotnet run
 </code></pre>
@@ -1742,7 +1820,7 @@ dotnet run
 <li><input disabled="" type="checkbox"> APIM Test コンソールの Trace で <code>Authorization: AWS4-HMAC-SHA256 ...</code> ヘッダーが生成されていることを確認した</li>
 <li><input disabled="" type="checkbox"> <code>bedrock-APIM-direct/</code> の AWS ネイティブ SDK サンプル（<code>dotnet run</code>）が APIM 経由で <code>[AWS Bedrock mock API] Echo response: ...</code> を返した</li>
 </ul>
-<p>完了したら <a href="./lab5.md">Lab 5 — 外部環境（AWS 相当）で APIM Self-hosted Gateway を展開</a> へ。</p>
+<p>完了したら <a href="#lab5" class="nav-link" data-page="lab5">Lab 5 — 外部環境（AWS 相当）で APIM Self-hosted Gateway を展開</a> へ。</p>
 
   </section>
   <section id="page-lab5" class="page-section" style="display:none">
@@ -1757,8 +1835,8 @@ dotnet run
 <p>約 55 分</p>
 <h2 id="事前条件">事前条件</h2>
 <ul>
-<li><a href="./lab3.md">Lab 3</a> 完了 — <code>openai-api</code> が APIM で動作中</li>
-<li><a href="./lab4.md">Lab 4</a> 完了 — <code>bedrock-api</code>（AWS Bedrock の Anthropic Claude）が APIM に登録済み</li>
+<li><a href="#lab3" class="nav-link" data-page="lab3">Lab 3</a> 完了 — <code>openai-api</code> が APIM で動作中</li>
+<li><a href="#lab4" class="nav-link" data-page="lab4">Lab 4</a> 完了 — <code>bedrock-api</code>（AWS Bedrock の Anthropic Claude）が APIM に登録済み</li>
 <li>APIM SKU が <strong>Classic Developer</strong> または <strong>Premium</strong>（StandardV2 等は不可）</li>
 </ul>
 <blockquote>
@@ -1769,7 +1847,7 @@ StandardV2 で実施すると Gateway バインド時に <code>MethodNotAllowedI
 <h2 id="5-1-apim-側で-gateway-リソースを作成">5-1. APIM 側で Gateway リソースを作成</h2>
 <h3 id="portal-手順">Portal 手順</h3>
 <ol>
-<li>Azure Portal で <code>apim-aigw-&lt;id&gt;</code> を開く</li>
+<li>Azure Portal で <code>apim-aigw-handson-&lt;id&gt;</code> を開く</li>
 <li>左メニュー <strong>デプロイとインフラストラクチャ &gt; セルフホステッド ゲートウェイ</strong> を選択</li>
 <li><strong>＋ 追加</strong> をクリック</li>
 <li>設定:<ul>
@@ -1813,8 +1891,8 @@ StandardV2 で実施すると Gateway バインド時に <code>MethodNotAllowedI
 </li>
 <li>上記を選んだ時点で <strong>トークン</strong> テキストボックスに <code>GatewayKey &lt;gateway-id&gt;&amp;&lt;expiry&gt;&amp;&lt;signature&gt;</code> 形式の完成済みトークンが自動表示される</li>
 <li>右端の <strong>コピー</strong> アイコンでクリップボードに保存し、安全な場所にメモ</li>
-<li>トークン欄のすぐ下にある <strong>構成エンドポイント</strong> フィールドに <code>apim-aigw-&lt;id&gt;.configuration.azure-api.net</code> が表示される（<code>config.service.endpoint</code> に使う値）</li>
-<li>さらに下の <strong>デプロイ スクリプト</strong> セクション → <strong>Docker</strong> タブ → <strong>環境 (env.conf)</strong> ブロックに:<pre><code>config.service.endpoint=apim-aigw-&lt;id&gt;.configuration.azure-api.net
+<li>トークン欄のすぐ下にある <strong>構成エンドポイント</strong> フィールドに <code>apim-aigw-handson-&lt;id&gt;.configuration.azure-api.net</code> が表示される（<code>config.service.endpoint</code> に使う値）</li>
+<li>さらに下の <strong>デプロイ スクリプト</strong> セクション → <strong>Docker</strong> タブ → <strong>環境 (env.conf)</strong> ブロックに:<pre><code>config.service.endpoint=apim-aigw-handson-&lt;id&gt;.configuration.azure-api.net
 config.service.auth=GatewayKey &lt;gateway-id&gt;&amp;&lt;expiry&gt;&amp;&lt;signature&gt;
 runtime.deployment.artifact.source=Azure Portal
 runtime.deployment.mechanism=Docker
@@ -1982,7 +2060,7 @@ runtime.deployment.mechanism=Docker
 </thead>
 <tbody><tr>
 <td><code>config.service.endpoint</code></td>
-<td><code>apim-aigw-&lt;id&gt;.configuration.azure-api.net</code></td>
+<td><code>apim-aigw-handson-&lt;id&gt;.configuration.azure-api.net</code></td>
 </tr>
 <tr>
 <td><code>config.service.auth</code></td>
@@ -2089,7 +2167,7 @@ Successfully Connected to container: &#39;shgw-&lt;id&gt;&#39; [Revision: &#39;c
 [Info] [OperationRouteTableRebuildCompleted], message: bedrock-api:Rev=1, source: ApiRouter
 [Info] [MsalAppClientCreated], message: MSAL app client created for client ID ...
 [Info] [ManagedIdentityAddedToMap], message: systemAssigned, source: ManagedIdentityResolver
-[Info] [EventSnapshotRestored], message: revision: 00000xxx, serviceName: apim-aigw-&lt;id&gt;, gatewayId: ..., source: ConfigurationRepositoryProvider
+[Info] [EventSnapshotRestored], message: revision: 00000xxx, serviceName: apim-aigw-handson-&lt;id&gt;, gatewayId: ..., source: ConfigurationRepositoryProvider
 [Info] [EventsSuccessfullyRestored], source: ConfigurationRepositoryProvider
 [Info] [ConfigInitialSyncCompleted], source: ConfigurationRepositoryProvider
 [Info] [BootstrapperStarted], source: Bootstrapper
@@ -2129,7 +2207,7 @@ Successfully Connected to container: &#39;shgw-&lt;id&gt;&#39; [Revision: &#39;c
 </tr>
 <tr>
 <td>構成 URL</td>
-<td><code>apim-aigw-&lt;id&gt;.configuration.azure-api.net</code></td>
+<td><code>apim-aigw-handson-&lt;id&gt;.configuration.azure-api.net</code></td>
 </tr>
 <tr>
 <td>状態</td>
@@ -2272,7 +2350,7 @@ Remove-Item $tmp -Force
 <li><input disabled="" type="checkbox"> 外部 SHGW (Container Apps アプリケーション URL) 経由で <code>/bedrock/model/.../converse</code> が <code>api-key</code> ヘッダー付きで 200 を返す</li>
 <li><input disabled="" type="checkbox"> 同じリクエストを Azure 直の APIM URL でも実行し、両方とも成功することを確認</li>
 </ul>
-<p>完了したら <a href="./lab6.md">Lab 6 — OpenTelemetry によるモニタリング / トレーシング</a> へ。</p>
+<p>完了したら <a href="#lab6" class="nav-link" data-page="lab6">Lab 6 — OpenTelemetry によるモニタリング / トレーシング</a> へ。</p>
 
   </section>
   <section id="page-lab6" class="page-section" style="display:none">
@@ -2289,18 +2367,18 @@ Remove-Item $tmp -Force
 <p>約 45 分</p>
 <h2 id="事前条件">事前条件</h2>
 <ul>
-<li><a href="./lab3.md">Lab 3</a> 完了 — <code>llm-emit-token-metric</code> ポリシーが動作</li>
-<li><a href="./lab5.md">Lab 5</a> 完了 — 外部 SHGW (Container Apps) 経由のリクエストも成功</li>
+<li><a href="#lab3" class="nav-link" data-page="lab3">Lab 3</a> 完了 — <code>llm-emit-token-metric</code> ポリシーが動作</li>
+<li><a href="#lab5" class="nav-link" data-page="lab5">Lab 5</a> 完了 — 外部 SHGW (Container Apps) 経由のリクエストも成功</li>
 <li>Application Insights <code>appi-aigw-&lt;id&gt;</code> が APIM に紐付け済み</li>
 </ul>
 <hr>
 <h2 id="6-1-apim-の-otel-設定確認">6-1. APIM の OTel 設定確認</h2>
 <p>APIM Portal の Application Insights 連携は <strong>2 つの画面に分かれて</strong> います。両方を確認します。</p>
 <h3 id="a-logger-紐付けの確認">(a) Logger 紐付けの確認</h3>
-<p>Portal → <code>apim-aigw-&lt;id&gt;</code> → 左メニュー <strong>監視 &gt; Application Insights</strong></p>
+<p>Portal → <code>apim-aigw-handson-&lt;id&gt;</code> → 左メニュー <strong>監視 &gt; Application Insights</strong></p>
 <p>一覧に <code>appi-aigw-&lt;id&gt;</code> が表示されていれば Logger 紐付け済みです。<strong>行をクリックすると Application Insights リソース自体に遷移する</strong> ため、詳細設定は (b) で確認します。表示されていない場合は <code>+ 追加</code> から Application Insights <code>appi-aigw-&lt;id&gt;</code> を選んで作成してください。</p>
 <h3 id="b-サンプリング・verbosity・w3c-連携の確認">(b) サンプリング・Verbosity・W3C 連携の確認</h3>
-<p>Portal → <code>apim-aigw-&lt;id&gt;</code> → 左メニュー <strong>APIs &gt; API</strong> → 中央 API 一覧の一番上 <strong><code>All APIs</code></strong> をクリック → 右ペイン上部タブ <strong>Settings</strong></p>
+<p>Portal → <code>apim-aigw-handson-&lt;id&gt;</code> → 左メニュー <strong>APIs &gt; API</strong> → 中央 API 一覧の一番上 <strong><code>All APIs</code></strong> をクリック → 右ペイン上部タブ <strong>Settings</strong></p>
 <p>下にスクロールすると <strong>Diagnostics Logs</strong> セクションが表示されます。上部のサブタブ <strong>Application Insights / Azure Monitor / Local</strong> のうち、<strong>Application Insights</strong> タブを選択した状態で以下を確認:</p>
 <table>
 <thead>
@@ -2399,8 +2477,8 @@ Remove-Item $tmp -Force
     Client --&gt;|&quot;HTTP request&quot;| Ingress
     Egress --&gt;|&quot;HTTP request&lt;br/&gt;+ traceparent&quot;| Model
 
-    Ingress -.-&gt;|&quot;span 発行&quot;| R[&quot;&lt;b&gt;AppRequests&lt;/b&gt;&lt;br/&gt;AppRoleName=apim-aigw-...&lt;br/&gt;OperationName=ChatCompletions_Create&quot;]
-    Egress -.-&gt;|&quot;span 発行&lt;br/&gt;(HTTP メタデータのみ)&quot;| D[&quot;&lt;b&gt;AppDependencies&lt;/b&gt;&lt;br/&gt;AppRoleName=apim-aigw-...&lt;br/&gt;Name=POST .../chat/completions&lt;br/&gt;Target=&amp;lt;aoai endpoint&amp;gt;&lt;br/&gt;DurationMs / ResultCode&lt;br/&gt;&lt;i&gt;※ gen_ai.* 属性は付かない&lt;/i&gt;&quot;]
+    Ingress -.-&gt;|&quot;span 発行&quot;| R[&quot;&lt;b&gt;AppRequests&lt;/b&gt;&lt;br/&gt;AppRoleName=apim-aigw-handson-...&lt;br/&gt;OperationName=ChatCompletions_Create&quot;]
+    Egress -.-&gt;|&quot;span 発行&lt;br/&gt;(HTTP メタデータのみ)&quot;| D[&quot;&lt;b&gt;AppDependencies&lt;/b&gt;&lt;br/&gt;AppRoleName=apim-aigw-handson-...&lt;br/&gt;Name=POST .../chat/completions&lt;br/&gt;Target=&amp;lt;aoai endpoint&amp;gt;&lt;br/&gt;DurationMs / ResultCode&lt;br/&gt;&lt;i&gt;※ gen_ai.* 属性は付かない&lt;/i&gt;&quot;]
     Model -.-&gt;|&quot;span 発行&lt;br/&gt;&lt;b&gt;しない&lt;/b&gt;&quot;| X[&quot;（なし）&lt;br/&gt;業界標準アーキテクチャ&quot;]
 
     classDef noSpan fill:#fdd,stroke:#c66,color:#600
@@ -2538,7 +2616,7 @@ Remove-Item $tmp -Force
 </tbody></table>
 <p>本 Lab ではいずれも実装しません。</p>
 <blockquote>
-<p>:information_source: 拡張パターンと業界標準の dependency span モデルの詳細は <a href="../Otel_Info.md">docs/Otel_Info.md</a> を参照。</p>
+<p>:information_source: 拡張パターンと業界標準の dependency span モデルの詳細は docs/Otel_Info.md を参照。</p>
 </blockquote>
 <h2 id="6-2-b-apim-trace-の検証-親子-span-の連結を確認">6-2-b. APIM trace の検証（親子 span の連結を確認）</h2>
 <p>ここまでで APIM 側に App Insights ロガー (§6-1) と W3C trace context (§6-1(b)) が設定されています。実際に APIM 経由でリクエストを流し、<code>AppRequests</code> (Ingress) と <code>AppDependencies</code> (Egress = LLM Call) が <strong>同一 trace-id で親子 span として連結している</strong> ことを KQL で確認します。</p>
@@ -2573,7 +2651,7 @@ Remove-Item $tmp -Force
 | order by TimeGenerated asc
 </code></pre>
 </li>
-<li><p><strong><code>AppRoleName</code> が <code>apim-aigw-&lt;id&gt;</code> の行が 2 行返り、かつ親子関係が成立していれば成功</strong> です。期待される並び:</p>
+<li><p><strong><code>AppRoleName</code> が <code>apim-aigw-handson-&lt;id&gt;</code> の行が 2 行返り、かつ親子関係が成立していれば成功</strong> です。期待される並び:</p>
 <table>
 <thead>
 <tr>
@@ -2598,7 +2676,7 @@ Remove-Item $tmp -Force
 <td><code>&lt;span-id-B&gt;</code></td>
 <td><strong><code>&lt;span-id-A&gt;</code></strong> ← AppRequests の Id を指す</td>
 <td><code>POST /openai/deployments/.../chat/completions</code></td>
-<td><code>aif-aigw-&lt;id&gt;.openai.azure.com</code></td>
+<td><code>aif-aigw-handson-&lt;id&gt;.openai.azure.com</code></td>
 <td>~1221 ms</td>
 </tr>
 </tbody></table>
@@ -2615,11 +2693,11 @@ Remove-Item $tmp -Force
 <h2 id="6-2-c-任意-foundry-に-application-insights-を接続する">6-2-c. (任意) Foundry に Application Insights を接続する</h2>
 <blockquote>
 <p>:information_source: <strong>本ハンズオンでは省略可能</strong> です。本 Lab の構成（APIM → Foundry の AOAI 互換エンドポイント）では Foundry 側から span は発行されないため、接続しても観測される span は増えません。<strong>将来 Foundry Agent (Prompt / Workflow / Hosted) を追加検証する際に、Foundry 側で発行される agent / tool call span を同じ App Insights で受け取れるように下準備しておきたい場合</strong>に実施してください。既に接続済みの場合は、画面で確認だけして §6-3 に進んでください。</p>
-<p>:warning: <strong>Application Insights への接続は Azure Portal ではなく Foundry ポータル側で行います</strong>。Foundry リソース (<code>aif-aigw-&lt;id&gt;</code>) の Azure Portal サイドメニュー（監視配下）には <strong>警告 / メトリック / 診断設定 / ログ しかなく、「Application Insights」項目は存在しません</strong>。</p>
+<p>:warning: <strong>Application Insights への接続は Azure Portal ではなく Foundry ポータル側で行います</strong>。Foundry リソース (<code>aif-aigw-handson-&lt;id&gt;</code>) の Azure Portal サイドメニュー（監視配下）には <strong>警告 / メトリック / 診断設定 / ログ しかなく、「Application Insights」項目は存在しません</strong>。</p>
 </blockquote>
 <h3 id="手順">手順</h3>
 <ol>
-<li><p>Azure Portal → <code>aif-aigw-&lt;id&gt;</code>（Lab 2 で作成した Foundry リソース）を開く</p>
+<li><p>Azure Portal → <code>aif-aigw-handson-&lt;id&gt;</code>（Lab 2 で作成した Foundry リソース）を開く</p>
 </li>
 <li><p><strong>概要</strong> ページ上部の <strong>「Foundry ポータルに移動」</strong> ボタンをクリック → Foundry ポータル (ai.azure.com) が新しいタブで開く</p>
 </li>
@@ -2675,7 +2753,7 @@ Remove-Item $tmp -Force
 </thead>
 <tbody><tr>
 <td><strong>cloud APIM</strong>（マネージド ゲートウェイ）</td>
-<td><code>apim-aigw-&lt;id&gt;</code> の APIM 本体に組み込まれた既定ゲートウェイ。Azure 内で Microsoft が運用</td>
+<td><code>apim-aigw-handson-&lt;id&gt;</code> の APIM 本体に組み込まれた既定ゲートウェイ。Azure 内で Microsoft が運用</td>
 </tr>
 <tr>
 <td><strong>SHGW</strong>（自己ホスト型ゲートウェイ / Self-Hosted Gateway）</td>
@@ -2767,12 +2845,12 @@ Remove-Item $tmp -Force
 </tr>
 </thead>
 <tbody><tr>
-<td><code>apim-aigw-&lt;id&gt;</code></td>
+<td><code>apim-aigw-handson-&lt;id&gt;</code></td>
 <td>cloud APIM（マネージド ゲートウェイ）</td>
 </tr>
 <tr>
-<td><code>apim-aigw-&lt;id&gt; &lt;gateway-resource-name&gt;</code></td>
-<td>SHGW（例: <code>apim-aigw-user99 aws-ap-northeast-1</code>）</td>
+<td><code>apim-aigw-handson-&lt;id&gt; &lt;gateway-resource-name&gt;</code></td>
+<td>SHGW（例: <code>apim-aigw-handson-user99 aws-ap-northeast-1</code>）</td>
 </tr>
 </tbody></table>
 <p>SHGW の AppRoleName は <strong><code>{APIMサービス名} {SHGWゲートウェイリソース名}</code></strong>（スペース区切り）になります。</p>
@@ -2780,7 +2858,7 @@ Remove-Item $tmp -Force
 <li><p><strong>SHGW のリクエスト span を確認</strong>:</p>
 <pre><code class="language-kusto">AppRequests
 | where TimeGenerated &gt; ago(10m)
-| where AppRoleName != &quot;apim-aigw-&lt;id&gt;&quot;   // cloud APIM を除外。SHGW は名前にスペースが入る
+| where AppRoleName != &quot;apim-aigw-handson-&lt;id&gt;&quot;   // cloud APIM を除外。SHGW は名前にスペースが入る
 | project TimeGenerated, OperationId, OperationName, Url, ResultCode, DurationMs, AppRoleName
 | order by TimeGenerated desc
 | take 5
@@ -2859,7 +2937,7 @@ Remove-Item $tmp -Force
 <li><input disabled="" type="checkbox"> Workbook <code>aigw-overview</code> に 4 タイルが揃った</li>
 <li><input disabled="" type="checkbox"> Container Apps のコンソールログが Log Analytics (<code>ContainerAppConsoleLogs_CL</code>) で検索できる</li>
 </ul>
-<p>完了したら <a href="./lab7.md">Lab 7 — クリーンアップ</a> へ。</p>
+<p>完了したら <a href="#lab7" class="nav-link" data-page="lab7">Lab 7 — クリーンアップ</a> へ。</p>
 
   </section>
   <section id="page-lab7" class="page-section" style="display:none">
@@ -2906,7 +2984,7 @@ az containerapp delete -g rg-aigw-handson-&lt;id&gt; -n aca-shgw-&lt;id&gt; --ye
 <p>Container App を消した時点で SHGW は切断されますが、APIM 側の Gateway リソースは残ります。</p>
 <h3 id="portal-手順">Portal 手順</h3>
 <ol>
-<li>Azure Portal で <code>apim-aigw-&lt;id&gt;</code> を開く</li>
+<li>Azure Portal で <code>apim-aigw-handson-&lt;id&gt;</code> を開く</li>
 <li>左メニュー <strong>デプロイとインフラストラクチャ &gt; ゲートウェイ</strong></li>
 <li><code>gw-ext-tokyo-&lt;id&gt;</code> の行を選択 → <strong>削除</strong></li>
 <li>確認ダイアログで <strong>ハイ</strong></li>
@@ -2915,7 +2993,7 @@ az containerapp delete -g rg-aigw-handson-&lt;id&gt; -n aca-shgw-&lt;id&gt; --ye
 <p>7-3 で <code>rg-aigw-handson-&lt;id&gt;</code> を RG ごと削除する場合は、この手順はスキップして構いません。</p>
 </blockquote>
 <details>
-<summary>CLI で実行する場合（参考）</summary><pre><code class="language-pwsh">$apim = &quot;apim-aigw-&lt;id&gt;&quot;
+<summary>CLI で実行する場合（参考）</summary><pre><code class="language-pwsh">$apim = &quot;apim-aigw-handson-&lt;id&gt;&quot;
 $rg   = &quot;rg-aigw-handson-&lt;id&gt;&quot;
 $gw   = &quot;gw-ext-tokyo-&lt;id&gt;&quot;
 $sub  = (az account show --query id -o tsv)

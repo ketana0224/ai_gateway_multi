@@ -183,8 +183,8 @@ APIM が backend として SaaS エージェントを呼ぶ場合、APIM 側 §6
 本ハンズオン（Lab 6）の動線は **APIM の Test コンソール / curl から直接 APIM へ** リクエストを送るため、`traceparent` は上流から伝搬してきません。したがって [Lab 6](./labs/lab6.md) §6-4 で見える「エンドツーエンド トランザクション」は:
 
 ```
-[apim-aigw-<initials>]  POST /openai/...    ← トレースの始点 = APIM
-  └─ [aif-aigw-<initials>]  openai.chat.completions
+[apim-aigw-handson-<initials>]  POST /openai/...    ← トレースの始点 = APIM
+  └─ [aif-aigw-handson-<initials>]  openai.chat.completions
 ```
 
 という **2 階層** のトレースです。これは **「APIM 起点でダウンストリーム側を末端まで連結」** という意味であり、**ブラウザやエージェント等の上流クライアントを含む E2E ではない** ことに注意してください。
@@ -215,7 +215,7 @@ APIM が backend として SaaS エージェントを呼ぶ場合、APIM 側 §6
    <button onclick="callApim()">Call APIM</button>
    <script>
      async function callApim() {
-       await fetch("https://apim-aigw-<initials>.azure-api.net/openai/openai/responses?api-version=2025-03-01-preview", {
+       await fetch("https://apim-aigw-handson-<initials>.azure-api.net/openai/openai/responses?api-version=2025-03-01-preview", {
          method: "POST",
          headers: { "Content-Type": "application/json", "api-key": "<sub-key>" },
          body: JSON.stringify({ model: "gpt-4o-mini", input: "hi" })
@@ -228,8 +228,8 @@ APIM が backend として SaaS エージェントを呼ぶ場合、APIM 側 §6
 
    ```
    [browser]  fetch /openai/...                ← 始点 = ブラウザ
-     └─ [apim-aigw-<initials>]  POST /openai/...
-          └─ [aif-aigw-<initials>]  openai.chat.completions
+     └─ [apim-aigw-handson-<initials>]  POST /openai/...
+          └─ [aif-aigw-handson-<initials>]  openai.chat.completions
    ```
 
    3 階層が 1 本のタイムラインで見える。
@@ -247,7 +247,7 @@ import httpx
 configure_azure_monitor()  # APPLICATIONINSIGHTS_CONNECTION_STRING を自動で拾う
 
 httpx.post(
-    "https://apim-aigw-<initials>.azure-api.net/openai/openai/responses?api-version=2025-03-01-preview",
+    "https://apim-aigw-handson-<initials>.azure-api.net/openai/openai/responses?api-version=2025-03-01-preview",
     headers={"api-key": "<sub-key>"},
     json={"model": "gpt-4o-mini", "input": "hi"},
 )
@@ -256,9 +256,9 @@ httpx.post(
 `httpx` / `requests` / `urllib3` 等は自動計装対象で、**`traceparent` ヘッダが outgoing リクエストに勝手に乗ります**。App Insights には:
 
 ```
-[client-app]  POST https://apim-aigw-.../openai/...   ← 始点 = クライアント
-  └─ [apim-aigw-<initials>]  POST /openai/...
-       └─ [aif-aigw-<initials>]  openai.chat.completions
+[client-app]  POST https://apim-aigw-handson-.../openai/...   ← 始点 = クライアント
+  └─ [apim-aigw-handson-<initials>]  POST /openai/...
+       └─ [aif-aigw-handson-<initials>]  openai.chat.completions
 ```
 
 が見える。

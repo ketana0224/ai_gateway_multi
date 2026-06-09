@@ -38,7 +38,7 @@ AWS Bedrock は **OpenAI 互換ではない独自スキーマ**（Converse / Inv
 
 ### Portal 手順
 
-1. `APIM (apim-aigw-<id>) → 左メニュー APIs → + API の追加`
+1. `APIM (apim-aigw-handson-<id>) → 左メニュー APIs → + API の追加`
 2. **「Create an AI API」** セクション内の **Language Model API** カードを選択
 
 
@@ -248,7 +248,7 @@ MS Learn の「[Configure policies to authenticate requests to the Amazon Bedroc
 
 </details>
 
-> :information_source: 上記 XML は `apim-aigw-userxx`（Developer SKU / japaneast）で「200 OK + `Echo: hello via Bedrock through APIM with SigV4 no Host header`」を返すことを実機検証済みです。APIM のポリシー仕様が今後変わった場合は MS Learn の最新版を優先してください（出典 URL は同じ）。
+> :information_source: 上記 XML は `apim-aigw-handson-userxx`（Developer SKU / japaneast）で「200 OK + `Echo: hello via Bedrock through APIM with SigV4 no Host header`」を返すことを実機検証済みです。APIM のポリシー仕様が今後変わった場合は MS Learn の最新版を優先してください（出典 URL は同じ）。
 
 ## 4-3. Backend 一覧を確認
 
@@ -290,7 +290,7 @@ APIs 一覧に Lab 3 の `openai-api` と合わせて **2 API**、Backends → *
 Lab 3 で作成したサブスクリプション キーをそのまま流用します。
 
 ```pwsh
-$APIM = "https://apim-aigw-<id>.azure-api.net"
+$APIM = "https://apim-aigw-handson-<id>.azure-api.net"
 $KEY  = "<Lab 3 のサブスクリプション主キー>"
 $MODEL_ID = "us.anthropic.claude-3-5-haiku-20241022-v1:0"
 $tmp  = New-TemporaryFile
@@ -329,7 +329,7 @@ Remove-Item $tmp -Force
 
 ```pwsh
 cd .\bedrock-APIM-direct
-$env:APIM_BEDROCK_URL      = "https://apim-aigw-<id>.azure-api.net/bedrock"
+$env:APIM_BEDROCK_URL      = "https://apim-aigw-handson-<id>.azure-api.net/bedrock"
 $env:APIM_SUBSCRIPTION_KEY = "<Lab 3 のサブスクリプション主キー>"
 dotnet run
 ```
